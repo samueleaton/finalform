@@ -1,6 +1,19 @@
+
+<br>  
+<br>  
+<p align="center">
+<img src="logo.png">  
+</p>
+<br>  
+<br>  
+
 # FinalForm
 
 HTML form fields parser
+
+<img src="https://img.shields.io/badge/license-MIT-blue.svg">
+
+<br>
 
 ## Usage
 
