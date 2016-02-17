@@ -1,4 +1,4 @@
-import { finalform } from './finalform'
+import finalform from './finalform'
 
 const form = document.querySelector('#formy');
 

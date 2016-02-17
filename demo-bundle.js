@@ -48,15 +48,19 @@
 
 	var _finalform = __webpack_require__(1);
 
+	var _finalform2 = _interopRequireDefault(_finalform);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	var form = document.querySelector('#formy');
 
 	console.log('\nfinalform.parse(form)');
-	console.log(_finalform.finalform.parse(form));
+	console.log(_finalform2.default.parse(form));
 
 	console.log('\nfinalform.serialize(form)');
-	console.log(_finalform.finalform.serialize(form));
+	console.log(_finalform2.default.serialize(form));
 
-	window.finalform = _finalform.finalform;
+	window.finalform = _finalform2.default;
 	window.form = form;
 
 /***/ },
@@ -71,13 +75,19 @@
 
 	'use strict';
 
+	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
+	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	};
 
-	var finalform = exports.finalform = function () {
+	exports.default = function () {
 	  var _ = {
 	    isArray: function isArray(obj) {
 	      return (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && (Array.isArray && Array.isArray(obj) || obj.constructor === Array || obj instanceof Array);
@@ -91,7 +101,6 @@
 	      }
 	    },
 
-
 	    // map array
 	    map: function map(list, func) {
 	      if (!list || !list.length) return [];
@@ -100,7 +109,6 @@
 	        arr.push(func(list[i]));
 	      }return arr;
 	    },
-
 
 	    // filter array
 	    filter: function filter(list, func) {
@@ -111,7 +119,6 @@
 	      }
 	      return arr;
 	    },
-
 
 	    // merge objects
 	    merge: function merge() {
@@ -162,12 +169,13 @@
 	    var obj = {};
 	    _.each(element.getElementsByTagName('input'), function (input, i) {
 
-	      var name = input.name || input.id || input.placeholder || 'input-' + i;
+	      var type = input.type || 'text';
+	      var name = input.name || input.id || input.placeholder || 'input-' + type + '-' + i;
 
-	      if (input.type === 'checkbox') {
+	      if (type === 'checkbox') {
 	        if (!_.isArray(obj[name])) obj[name] = [];
 	        if (input.checked) obj[name].push(input.value);
-	      } else if (input.type === 'radio') {
+	      } else if (type === 'radio') {
 	        if (typeof obj[name] === 'undefined') obj[name] = '';
 	        if (input.checked) obj[name] = input.value;
 	      } else obj[name] = input.value;
