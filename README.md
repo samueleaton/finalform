@@ -1,12 +1,3 @@
-
-<br>  
-<br>  
-<p align="center">
-<img src="logo.png">  
-</p>
-<br>  
-<br>  
-
 # FinalForm
 
 HTML form fields parser
@@ -40,4 +31,4 @@ const form = document.querySelector('#myForm');
 const serializedForm = finalform.serialize(form);
 ```
 
-See better example in `demo.html`.
+See better example in `demo.html` and `demo.js`.
