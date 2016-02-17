@@ -4,8 +4,6 @@ HTML form fields parser
 
 <img src="https://img.shields.io/badge/license-MIT-blue.svg">
 
-<br>
-
 ## Usage
 
 Simply pass a form object into one of two methods:
