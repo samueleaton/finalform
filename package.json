@@ -1,0 +1,26 @@
+{
+  "name": "finalform",
+  "version": "0.0.1",
+  "description": "Parse HTML form fields",
+  "main": "finalform.js",
+  "scripts": {
+    "lint": "eslint -c ./.eslintrc finalform.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "html",
+    "form",
+    "forms",
+    "fields",
+    "parse",
+    "html5"
+  ],
+  "author": "Sam Eaton",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-preset-es2015": "^6.5.0",
+    "eslint": "^2.1.0",
+    "webpack": "^1.12.13"
+  }
+}

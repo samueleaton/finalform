@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Final Form</title>
+</head>
+<body>
+
+  <form id="formy">
+    <input type="text" ff name="email" placeholder="email">
+    <input type="text" ff name="phone" placeholder="phone">
+    <input type="text" ff name="name" placeholder="name">
+
+    <!-- input with no name but id -->
+    <input id="person" placeholder="person">
+
+    <!-- input with no name or id, but with placeholder -->
+    <input placeholder="company">
+
+    <!-- input with no name, id, or placeholder -->
+    <input>
+
+    <br><br>
+
+    Animal<br>
+    Cat <input type="checkbox" name="animal" value="cat" ff><br>
+    Dog <input type="checkbox" name="animal" value="dog" ff><br>
+    Iguana <input type="checkbox" name="animal" value="iguana" ff><br>
+    Kangaroo <input type="checkbox" name="animal" value="kangaroo" ff><br>
+
+    <br><br>
+
+    Fruit<br>
+    Apple <input type="radio" name="fruit" value="apple" ff><br>
+    Lemon <input type="radio" name="fruit" value="lemon" ff><br>
+    Lime <input type="radio" name="fruit" value="lime" ff><br>
+    Raspberry <input type="radio" name="fruit" value="raspberry" ff><br>
+
+    <br><br>
+
+    <textarea name="super-text-area"></textarea>
+
+    <br><br>
+
+    <label>
+      <input id="fruits-input" list="fruits">
+    </label>
+    <datalist id="fruits">
+      <option value="apple">
+      <option value="lemon">
+      <option value="plum">
+      <option value="grape">
+      <option value="watermelon">
+    </datalist>
+
+    <br><br>
+
+    <select id=cars name="cars">
+      <option selected disabled>Select Car</option>
+      <option value="audi">Audi</option>
+      <option value="vw">Volkswagen</option>
+      <option value="ford">Ford</option>
+      <option value="lambo">Lambo</option>
+    </select>
+
+  </form>
+
+  <br>
+  <hr>
+  <br>
+
+  <!-- <form>
+    
+    
+  </form> -->
+
+
+<script type="text/javascript" src="./finalform.js"></script>
+<script type="text/javascript">
+
+  var formy = document.querySelector('#formy');
+
+  console.log( finalform.parse(formy)     );
+  console.log( finalform.serialize(formy) );
+</script>
+</body>
+</html>
