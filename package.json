@@ -5,6 +5,7 @@
   "main": "finalform.js",
   "scripts": {
     "lint": "eslint -c ./.eslintrc finalform.js",
+    "bundle": "npm run -s lint && webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,7 +19,8 @@
   "author": "Sam Eaton",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.5.1",
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.2",
     "babel-preset-es2015": "^6.5.0",
     "eslint": "^2.1.0",
     "webpack": "^1.12.13"
