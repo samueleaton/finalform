@@ -10,6 +10,8 @@ console.log(finalform.serialize(form));
 
 window.finalform = finalform;
 window.form = form;
+window.externalTa = document.querySelector('#external-ta')
+
 form.addEventListener('submit', evt => {
   evt.preventDefault();
 

@@ -203,6 +203,7 @@ export default (function() {
         return serializeObject(parseForm(form));
       else
         return console.error('Not a valid HMTL form element.');
-    }
+    },
+    merge: _.merge
   };
 })();

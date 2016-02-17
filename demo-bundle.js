@@ -62,6 +62,8 @@
 
 	window.finalform = _finalform2.default;
 	window.form = form;
+	window.externalTa = document.querySelector('#external-ta');
+
 	form.addEventListener('submit', function (evt) {
 	  evt.preventDefault();
 
@@ -264,7 +266,9 @@
 	    },
 	    serialize: function serialize(form) {
 	      if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return serializeObject(parseForm(form));else return console.error('Not a valid HMTL form element.');
-	    }
+	    },
+
+	    merge: _.merge
 	  };
 	}();
 

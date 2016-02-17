@@ -116,6 +116,23 @@
 
   </form>
 
+  <br><br>
+
+  <hr>
+
+  <br><br>
+
+  <textarea id="external-ta" style="width:300px;height:200px;">This is a text area that is not part of the form but that I want to merge into the parsed form object. You can refrence me in JS as "externalTa"</textarea>
+
+  <br><br>
+
+  Merge other objects using the <code>merge</code> method.
+  
+  <br><br>
+
+  Example <code>finalform.merge( finalform.parse(form), {externalTa: externalTa.value} );</code>
+
+
   <br>
   <br>
   <br>

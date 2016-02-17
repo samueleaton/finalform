@@ -183,7 +183,9 @@ exports.default = function () {
     },
     serialize: function serialize(form) {
       if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return serializeObject(parseForm(form));else return console.error('Not a valid HMTL form element.');
-    }
+    },
+
+    merge: _.merge
   };
 }();
 
