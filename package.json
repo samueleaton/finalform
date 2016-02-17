@@ -1,7 +1,7 @@
 {
   "name": "finalform",
   "version": "0.0.1",
-  "description": "Parse HTML form fields",
+  "description": "HTML form fields parser",
   "main": "finalform.js",
   "scripts": {
     "lint": "eslint -c ./.eslintrc finalform.js",
