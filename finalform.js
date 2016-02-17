@@ -93,12 +93,25 @@ exports.default = function () {
     }
   };
 
+  /* generates a key for the field value
+    only runs if no 'name', 'id', and 'placeholder' attributes are found
+  */
+  function generateKeyName(obj, element, type, index) {
+    var i = index || 1;
+    var typeStr = typeof type === 'string' ? '-' + type : '';
+
+    if (typeof obj[element + typeStr] === 'undefined') return element + typeStr;else if (typeof obj[element + typeStr + '-' + i] === 'undefined') return element + typeStr + '-' + i;else return generateKeyName(obj, element, type, i + 1);
+  }
+
+  /* Gets all form <input> values
+  */
   function getInputs(element) {
     var obj = {};
+
     _.each(element.getElementsByTagName('input'), function (input, i) {
 
       var type = input.type || 'text';
-      var name = input.name || input.id || input.placeholder || 'input-' + type + '-' + i;
+      var name = input.name || input.id || input.placeholder || generateKeyName(obj, 'input', type);
 
       if (type === 'checkbox') {
         if (!_.isArray(obj[name])) obj[name] = [];
@@ -114,7 +127,7 @@ exports.default = function () {
   function getSelects(element) {
     var obj = {};
     _.each(element.getElementsByTagName('select'), function (select, i) {
-      var name = select.name || select.id || select.placeholder || 'select-' + i;
+      var name = select.name || select.id || select.placeholder || generateKeyName(obj, 'select');
       obj[name] = select.value;
     });
     return obj;
@@ -123,7 +136,7 @@ exports.default = function () {
   function getTextAreas(element) {
     var obj = {};
     _.each(element.getElementsByTagName('textarea'), function (ta, i) {
-      var name = ta.name || ta.id || ta.placeholder || 'textarea-' + i;
+      var name = ta.name || ta.id || ta.placeholder || generateKeyName(obj, 'textarea');
       obj[name] = ta.value;
     });
     return obj;
@@ -132,7 +145,7 @@ exports.default = function () {
   function getButtons(element) {
     var obj = {};
     _.each(element.getElementsByTagName('button'), function (btn, i) {
-      var name = btn.name || btn.id || btn.placeholder || 'button-' + i;
+      var name = btn.name || btn.id || btn.placeholder || generateKeyName(obj, 'button');
       obj[name] = btn.value;
     });
     return obj;

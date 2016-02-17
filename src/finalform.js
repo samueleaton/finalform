@@ -76,12 +76,32 @@ export default (function() {
     }
   };
 
+  /* generates a key for the field value
+    only runs if no 'name', 'id', and 'placeholder' attributes are found
+  */
+  function generateKeyName(obj, element, type, index) {
+    const i = index || 1;
+    const typeStr = typeof type === 'string' ? '-' + type : '';
+
+    if (typeof obj[element + typeStr] === 'undefined')
+      return element + typeStr;
+    else if (typeof obj[element + typeStr + '-' + i] === 'undefined')
+      return element + typeStr + '-' + i;
+    else
+      return generateKeyName(obj, element, type, i + 1);
+  }
+
+  /* Gets all form <input> values
+  */
   function getInputs(element) {
     const obj = {};
+
     _.each(element.getElementsByTagName('input'), (input, i) => {
 
       const type = input.type || 'text';
-      const name = input.name || input.id || input.placeholder || 'input-' + type + '-' + i;
+      const name = input.name || input.id || input.placeholder || generateKeyName(
+        obj, 'input', type
+      );
 
       if (type === 'checkbox') {
         if (!_.isArray(obj[name]))
@@ -104,7 +124,7 @@ export default (function() {
   function getSelects(element) {
     const obj = {};
     _.each(element.getElementsByTagName('select'), (select, i) => {
-      const name = select.name || select.id || select.placeholder || 'select-' + i;
+      const name = select.name || select.id || select.placeholder || generateKeyName(obj, 'select');
       obj[name] = select.value;
     });
     return obj;
@@ -113,7 +133,7 @@ export default (function() {
   function getTextAreas(element) {
     const obj = {};
     _.each(element.getElementsByTagName('textarea'), (ta, i) => {
-      const name = ta.name || ta.id || ta.placeholder || 'textarea-' + i;
+      const name = ta.name || ta.id || ta.placeholder || generateKeyName(obj, 'textarea');
       obj[name] = ta.value;
     });
     return obj;
@@ -122,7 +142,7 @@ export default (function() {
   function getButtons(element) {
     const obj = {};
     _.each(element.getElementsByTagName('button'), (btn, i) => {
-      const name = btn.name || btn.id || btn.placeholder || 'button-' + i;
+      const name = btn.name || btn.id || btn.placeholder || generateKeyName(obj, 'button');
       obj[name] = btn.value;
     });
     return obj;

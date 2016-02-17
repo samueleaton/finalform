@@ -62,6 +62,15 @@
 
 	window.finalform = _finalform2.default;
 	window.form = form;
+	form.addEventListener('submit', function (evt) {
+	  evt.preventDefault();
+
+	  console.log('\nfinalform.parse(form)');
+	  console.log(_finalform2.default.parse(evt.target));
+
+	  console.log('\nfinalform.serialize(form)');
+	  console.log(_finalform2.default.serialize(evt.target));
+	});
 
 /***/ },
 /* 1 */
@@ -165,12 +174,25 @@
 	    }
 	  };
 
+	  /* generates a key for the field value
+	    only runs if no 'name', 'id', and 'placeholder' attributes are found
+	  */
+	  function generateKeyName(obj, element, type, index) {
+	    var i = index || 1;
+	    var typeStr = typeof type === 'string' ? '-' + type : '';
+
+	    if (typeof obj[element + typeStr] === 'undefined') return element + typeStr;else if (typeof obj[element + typeStr + '-' + i] === 'undefined') return element + typeStr + '-' + i;else return generateKeyName(obj, element, type, i + 1);
+	  }
+
+	  /* Gets all form <input> values
+	  */
 	  function getInputs(element) {
 	    var obj = {};
+
 	    _.each(element.getElementsByTagName('input'), function (input, i) {
 
 	      var type = input.type || 'text';
-	      var name = input.name || input.id || input.placeholder || 'input-' + type + '-' + i;
+	      var name = input.name || input.id || input.placeholder || generateKeyName(obj, 'input', type);
 
 	      if (type === 'checkbox') {
 	        if (!_.isArray(obj[name])) obj[name] = [];
@@ -186,7 +208,7 @@
 	  function getSelects(element) {
 	    var obj = {};
 	    _.each(element.getElementsByTagName('select'), function (select, i) {
-	      var name = select.name || select.id || select.placeholder || 'select-' + i;
+	      var name = select.name || select.id || select.placeholder || generateKeyName(obj, 'select');
 	      obj[name] = select.value;
 	    });
 	    return obj;
@@ -195,7 +217,7 @@
 	  function getTextAreas(element) {
 	    var obj = {};
 	    _.each(element.getElementsByTagName('textarea'), function (ta, i) {
-	      var name = ta.name || ta.id || ta.placeholder || 'textarea-' + i;
+	      var name = ta.name || ta.id || ta.placeholder || generateKeyName(obj, 'textarea');
 	      obj[name] = ta.value;
 	    });
 	    return obj;
@@ -204,7 +226,7 @@
 	  function getButtons(element) {
 	    var obj = {};
 	    _.each(element.getElementsByTagName('button'), function (btn, i) {
-	      var name = btn.name || btn.id || btn.placeholder || 'button-' + i;
+	      var name = btn.name || btn.id || btn.placeholder || generateKeyName(obj, 'button');
 	      obj[name] = btn.value;
 	    });
 	    return obj;
