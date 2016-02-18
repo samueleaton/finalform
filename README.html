@@ -1014,17 +1014,9 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>README</title></head><body><article class="markdown-body"><p><br><br />
-<br><br />
-<p align="center"><br />
-<img src="/Users/samueleaton1/Dev/Github/finalform/logo.png"><br />
-</p><br />
-<br><br />
-<br>  </p>
-<h1 id="finalform"><a name="user-content-finalform" href="#finalform" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>FinalForm</h1>
+</style><title>README</title></head><body><article class="markdown-body"><h1 id="finalform"><a name="user-content-finalform" href="#finalform" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>FinalForm</h1>
 <p>HTML form fields parser</p>
 <p><img src="https://img.shields.io/badge/license-MIT-blue.svg"></p>
-<p><br></p>
 <h2 id="usage"><a name="user-content-usage" href="#usage" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Usage</h2>
 <p>Simply pass a form object into one of two methods:</p>
 <ul>
@@ -1032,17 +1024,36 @@ body .markdown-body
 <li><code>serialize</code></li>
 </ul>
 <p><strong>Parse Example</strong></p>
-<pre><code class="javascript">import { finalform } from 'finalform';
+<pre><code class="javascript">import finalform from 'finalform';
 
 const form = document.querySelector('#myForm');
 const formObj = finalform.parse(form);
 </code></pre>
 
 <p><strong>Serialize Example</strong></p>
-<pre><code class="javascript">import { finalform } from 'finalform';
+<pre><code class="javascript">import finalform from 'finalform';
 
 const form = document.querySelector('#myForm');
 const serializedForm = finalform.serialize(form);
 </code></pre>
 
-<p>See better example in <code>demo.html</code>.</p></article></body></html>
+<p>See better example in <code>demo.html</code> and <code>demo.js</code>.</p>
+<h4 id="passing-options"><a name="user-content-passing-options" href="#passing-options" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Passing Options</h4>
+<p>Pass an object of options as the second parameter to the <code>parse</code> or <code>serialize</code>methods. The options <strong>only</strong> effect <code>&lt;input&gt;</code> elements (meaning they don&rsquo;t modify values for <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, etc&hellip;).</p>
+<p>All options take boolean values <code>{trim: false, compress: true}</code></p>
+<p>Available Options:</p>
+<ul>
+<li><strong><code>trim</code></strong> - removes all spaces from beginning and end of string (defaults to <code>true</code>)</li>
+<li><strong><code>compress</code></strong> - compress multiple sequential blank spaces to a single space (defaults to <code>true</code>)</li>
+<li><strong><code>toUpperCase</code></strong> - convert values to uppercase (defaults to <code>false</code>)</li>
+<li><strong><code>toLowerCase</code></strong> - convert values to lowercase (defaults to <code>false</code>)</li>
+<li><strong><code>modify</code></strong> - a <code>false</code> value turns all other options to <code>false</code> (defaults to <code>true</code>)</li>
+</ul>
+<p>Example</p>
+<pre><code class="javascript">import finalform from 'finalform';
+
+const form = document.querySelector('#myForm');
+const formObj = finalform.parse(form, {
+    trim: false, compress: false, toUpperCase: true
+});
+</code></pre></article></body></html>

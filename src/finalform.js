@@ -93,7 +93,7 @@ export default (function() {
 
   /* Gets all form <input> values
   */
-  function getInputs(element) {
+  function getInputs(element, options) {
     const obj = {};
 
     _.each(element.getElementsByTagName('input'), (input, i) => {
@@ -102,21 +102,34 @@ export default (function() {
       const name = input.name || input.id || input.placeholder || generateKeyName(
         obj, 'input', type
       );
+      let val = input.value;
+
+      if (options.trim !== false)
+        val = val.trim();
+
+      if (options.compress !== false)
+        val = val.replace(/ +/g, ' ');
+
+      if (options.toUpperCase === true)
+        val = val.toUpperCase();
+
+      if (options.toLowerCase === true)
+        val = val.toLowerCase();
 
       if (type === 'checkbox') {
         if (!_.isArray(obj[name]))
           obj[name] = [];
         if (input.checked)
-          obj[name].push(input.value);
+          obj[name].push(val);
       }
       else if (type === 'radio') {
         if (typeof obj[name] === 'undefined')
           obj[name] = '';
         if (input.checked)
-          obj[name] = input.value;
+          obj[name] = val;
       }
       else
-        obj[name] = input.value;
+        obj[name] = val;
     });
     return obj;
   }
@@ -148,11 +161,11 @@ export default (function() {
     return obj;
   }
 
-  function parseForm(form) {
-    const inputs = getInputs(form);
-    const textAreas = getTextAreas(form);
-    const selects = getSelects(form);
-    const buttons = getButtons(form);
+  function parseForm(form, options) {
+    const inputs = getInputs(form, options);
+    const textAreas = getTextAreas(form, options);
+    const selects = getSelects(form, options);
+    const buttons = getButtons(form, options);
     return _.merge(inputs, textAreas, selects, buttons);
   }
 
@@ -182,25 +195,33 @@ export default (function() {
   }
 
   return {
-    parse(form) {
+    parse(form, options) {
+      const opts = options || {};
+      if (opts.modify === false)
+        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
+
       if (
         form &&
         form instanceof HTMLElement &&
         form.tagName &&
         form.tagName.toUpperCase() === 'FORM'
       )
-        return parseForm(form);
+        return parseForm(form, opts);
       else
         return console.error('Not a valid HMTL form element.');
     },
-    serialize(form) {
+    serialize(form, options) {
+      const opts = options || {};
+      if (opts.modify === false)
+        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
+
       if (
         form &&
         form instanceof HTMLElement &&
         form.tagName &&
         form.tagName.toUpperCase() === 'FORM'
       )
-        return serializeObject(parseForm(form));
+        return serializeObject(parseForm(form, opts));
       else
         return console.error('Not a valid HMTL form element.');
     },

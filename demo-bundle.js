@@ -188,21 +188,30 @@
 
 	  /* Gets all form <input> values
 	  */
-	  function getInputs(element) {
+	  function getInputs(element, options) {
 	    var obj = {};
 
 	    _.each(element.getElementsByTagName('input'), function (input, i) {
 
 	      var type = input.type || 'text';
 	      var name = input.name || input.id || input.placeholder || generateKeyName(obj, 'input', type);
+	      var val = input.value;
+
+	      if (options.trim !== false) val = val.trim();
+
+	      if (options.compress !== false) val = val.replace(/ +/g, ' ');
+
+	      if (options.toUpperCase === true) val = val.toUpperCase();
+
+	      if (options.toLowerCase === true) val = val.toLowerCase();
 
 	      if (type === 'checkbox') {
 	        if (!_.isArray(obj[name])) obj[name] = [];
-	        if (input.checked) obj[name].push(input.value);
+	        if (input.checked) obj[name].push(val);
 	      } else if (type === 'radio') {
 	        if (typeof obj[name] === 'undefined') obj[name] = '';
-	        if (input.checked) obj[name] = input.value;
-	      } else obj[name] = input.value;
+	        if (input.checked) obj[name] = val;
+	      } else obj[name] = val;
 	    });
 	    return obj;
 	  }
@@ -234,11 +243,11 @@
 	    return obj;
 	  }
 
-	  function parseForm(form) {
-	    var inputs = getInputs(form);
-	    var textAreas = getTextAreas(form);
-	    var selects = getSelects(form);
-	    var buttons = getButtons(form);
+	  function parseForm(form, options) {
+	    var inputs = getInputs(form, options);
+	    var textAreas = getTextAreas(form, options);
+	    var selects = getSelects(form, options);
+	    var buttons = getButtons(form, options);
 	    return _.merge(inputs, textAreas, selects, buttons);
 	  }
 
@@ -261,11 +270,17 @@
 	  }
 
 	  return {
-	    parse: function parse(form) {
-	      if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return parseForm(form);else return console.error('Not a valid HMTL form element.');
+	    parse: function parse(form, options) {
+	      var opts = options || {};
+	      if (opts.modify === false) opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
+
+	      if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return parseForm(form, opts);else return console.error('Not a valid HMTL form element.');
 	    },
-	    serialize: function serialize(form) {
-	      if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return serializeObject(parseForm(form));else return console.error('Not a valid HMTL form element.');
+	    serialize: function serialize(form, options) {
+	      var opts = options || {};
+	      if (opts.modify === false) opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
+
+	      if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return serializeObject(parseForm(form, opts));else return console.error('Not a valid HMTL form element.');
 	    },
 
 	    merge: _.merge
