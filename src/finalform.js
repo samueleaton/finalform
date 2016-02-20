@@ -117,10 +117,17 @@ export default (function() {
         val = val.toLowerCase();
 
       if (type === 'checkbox') {
-        if (!_.isArray(obj[name]))
-          obj[name] = [];
-        if (input.checked)
-          obj[name].push(val);
+        if (options.checkboxesAsArray) {
+          if (!_.isArray(obj[name]))
+            obj[name] = [];
+          if (input.checked)
+            obj[name].push(val);
+        }
+        else {
+          if (typeof obj[name] !== 'object')
+            obj[name] = {};
+          obj[name][val] = input.checked;
+        }
       }
       else if (type === 'radio') {
         if (typeof obj[name] === 'undefined')
@@ -197,9 +204,14 @@ export default (function() {
   return {
     parse(form, options) {
       const opts = options || {};
-      if (opts.modify === false)
-        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
-
+      if (opts.modify === false) {
+        opts.trim =
+        opts.compress =
+        opts.toUpperCase =
+        opts.toLowerCase =
+        opts.checkboxesAsArray =
+        false;
+      }
       if (
         form &&
         form instanceof HTMLElement &&
@@ -212,9 +224,14 @@ export default (function() {
     },
     serialize(form, options) {
       const opts = options || {};
-      if (opts.modify === false)
-        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
-
+      if (opts.modify === false) {
+        opts.trim =
+        opts.compress =
+        opts.toUpperCase =
+        opts.toLowerCase =
+        opts.checkboxesAsArray =
+        false;
+      }
       if (
         form &&
         form instanceof HTMLElement &&

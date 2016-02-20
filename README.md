@@ -42,6 +42,7 @@ Available Options:
 
 - **`trim`** - removes all spaces from beginning and end of string (defaults to `true`)
 - **`compress`** - compress multiple sequential blank spaces to a single space (defaults to `true`)
+- **`checkboxesAsArray`** - store check boxes as an array of selected boxes rather than an object of `true`/`false` value. (defaults to `false`)
 - **`toUpperCase`** - convert values to uppercase (defaults to `false`)
 - **`toLowerCase`** - convert values to lowercase (defaults to `false`)
 - **`modify`** - a `false` value turns all other options to `false` (defaults to `true`)
@@ -56,3 +57,4 @@ const formObj = finalform.parse(form, {
     trim: false, compress: false, toUpperCase: true
 });
 ```
+
