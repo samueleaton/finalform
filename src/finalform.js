@@ -6,7 +6,7 @@
 
 'use strict';
 
-export default (function() {
+module.exports = (function() {
   const _ = {
     isArray: obj => {
       return typeof obj === 'object' &&
