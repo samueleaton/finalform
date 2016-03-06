@@ -6,13 +6,9 @@
 
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-exports.default = function () {
+module.exports = function () {
   var _ = {
     isArray: function isArray(obj) {
       return (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && (Array.isArray && Array.isArray(obj) || obj.constructor === Array || obj instanceof Array);
@@ -123,8 +119,13 @@ exports.default = function () {
       if (options.toLowerCase === true) val = val.toLowerCase();
 
       if (type === 'checkbox') {
-        if (!_.isArray(obj[name])) obj[name] = [];
-        if (input.checked) obj[name].push(val);
+        if (options.checkboxesAsArray) {
+          if (!_.isArray(obj[name])) obj[name] = [];
+          if (input.checked) obj[name].push(val);
+        } else {
+          if (_typeof(obj[name]) !== 'object') obj[name] = {};
+          obj[name][val] = input.checked;
+        }
       } else if (type === 'radio') {
         if (typeof obj[name] === 'undefined') obj[name] = '';
         if (input.checked) obj[name] = val;
@@ -189,14 +190,16 @@ exports.default = function () {
   return {
     parse: function parse(form, options) {
       var opts = options || {};
-      if (opts.modify === false) opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
-
+      if (opts.modify === false) {
+        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = opts.checkboxesAsArray = false;
+      }
       if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return parseForm(form, opts);else return console.error('Not a valid HMTL form element.');
     },
     serialize: function serialize(form, options) {
       var opts = options || {};
-      if (opts.modify === false) opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = false;
-
+      if (opts.modify === false) {
+        opts.trim = opts.compress = opts.toUpperCase = opts.toLowerCase = opts.checkboxesAsArray = false;
+      }
       if (form && form instanceof HTMLElement && form.tagName && form.tagName.toUpperCase() === 'FORM') return serializeObject(parseForm(form, opts));else return console.error('Not a valid HMTL form element.');
     },
 
