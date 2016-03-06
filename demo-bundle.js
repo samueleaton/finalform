@@ -54,11 +54,11 @@
 
 	var form = document.querySelector('#formy');
 
-	console.log('\nfinalform.parse(form)');
-	console.log(_finalform2.default.parse(form));
+	// console.log('\nfinalform.parse(form)');
+	// console.log(finalform.parse(form));
 
-	console.log('\nfinalform.serialize(form)');
-	console.log(_finalform2.default.serialize(form));
+	// console.log('\nfinalform.serialize(form)');
+	// console.log(finalform.serialize(form));
 
 	window.finalform = _finalform2.default;
 	window.form = form;
