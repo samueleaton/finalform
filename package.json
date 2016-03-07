@@ -31,5 +31,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/samueleaton/finalform"
+  },
+  "dependencies": {
+    "lodash.flatten": "^4.1.0",
+    "lodash.foreach": "^4.1.0"
   }
 }
