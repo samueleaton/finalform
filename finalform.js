@@ -18,81 +18,34 @@ var _lodash3 = require('lodash.foreach');
 
 var _lodash4 = _interopRequireDefault(_lodash3);
 
+var _lodash5 = require('lodash.isarray');
+
+var _lodash6 = _interopRequireDefault(_lodash5);
+
+var _lodash7 = require('lodash.map');
+
+var _lodash8 = _interopRequireDefault(_lodash7);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 module.exports = function () {
-  var _ = {
-    isArray: function isArray(obj) {
-      return (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && (Array.isArray && Array.isArray(obj) || obj.constructor === Array || obj instanceof Array);
-    },
+  function merge() {
+    var obj = {};
 
-    // map array
-    map: function map(list, func) {
-      if (!list || !list.length) return [];
-      var arr = [];
-      for (var i = 0, ii = list.length; i < ii; i++) {
-        arr.push(func(list[i]));
-      }return arr;
-    },
-
-
-    // filter array
-    filter: function filter(list, func) {
-      if (!list || !list.length) return [];
-      var arr = [];
-      for (var i = 0, ii = list.length; i < ii; i++) {
-        if (func(list[i])) arr.push(list[i]);
-      }
-      return arr;
-    },
-
-
-    // merge objects
-    merge: function merge() {
-      var obj = {};
-
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      (0, _lodash4.default)((0, _lodash2.default)(args), function (arg) {
-        if (!arg || (typeof arg === 'undefined' ? 'undefined' : _typeof(arg)) !== 'object') return;
-
-        (0, _lodash4.default)(Object.keys(arg), function (key) {
-          obj[key] = arg[key];
-        });
-      });
-      return obj;
-    },
-    toArray: function toArray(list) {
-      var _this = this;
-
-      for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-
-      if (args && args.length) {
-        var _ret = function () {
-          var arr = [];
-          arr = arr.concat(list);
-          _this.each(args, function (arg) {
-            arr = arr.concat(arg);
-          });
-          return {
-            v: arr
-          };
-        }();
-
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-      } else if (!list || !list.length) return [list];else if (this.isArray(list)) return list;
-      var arr = [];
-      for (var i = 0, ii = list.length; i < ii; i++) {
-        arr.push(list[i]);
-      }return arr;
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
-  };
+
+    (0, _lodash4.default)((0, _lodash2.default)(args), function (arg) {
+      if (!arg || (typeof arg === 'undefined' ? 'undefined' : _typeof(arg)) !== 'object') return;
+      (0, _lodash4.default)(Object.keys(arg), function (key) {
+        obj[key] = arg[key];
+      });
+    });
+    return obj;
+  }
 
   var FinalForm = function () {
     _createClass(FinalForm, null, [{
@@ -126,7 +79,7 @@ module.exports = function () {
 
         (0, _lodash4.default)(Object.keys(obj), function (key) {
 
-          if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number') str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';else if (_.isArray(obj[key])) {
+          if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number') str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';else if ((0, _lodash6.default)(obj[key])) {
             var valueStr = '';
             (0, _lodash4.default)(obj[key], function (a) {
               valueStr += a + ',';
@@ -163,7 +116,7 @@ module.exports = function () {
     _createClass(FinalForm, [{
       key: 'getInputs',
       value: function getInputs() {
-        var _this2 = this;
+        var _this = this;
 
         var obj = {};
 
@@ -173,17 +126,17 @@ module.exports = function () {
           var name = FinalForm.getFieldName(input) || FinalForm.generateKeyName(obj, 'input', type);
           var val = input.value;
 
-          if (_this2.options.trim !== false) val = val.trim();
+          if (_this.options.trim !== false) val = val.trim();
 
-          if (_this2.options.compress !== false) val = val.replace(/ +/g, ' ');
+          if (_this.options.compress !== false) val = val.replace(/ +/g, ' ');
 
-          if (_this2.options.toUpperCase === true) val = val.toUpperCase();
+          if (_this.options.toUpperCase === true) val = val.toUpperCase();
 
-          if (_this2.options.toLowerCase === true) val = val.toLowerCase();
+          if (_this.options.toLowerCase === true) val = val.toLowerCase();
 
           if (type === 'checkbox') {
-            if (_this2.options.checkboxesAsArray) {
-              if (!_.isArray(obj[name])) obj[name] = [];
+            if (_this.options.checkboxesAsArray) {
+              if (!(0, _lodash6.default)(obj[name])) obj[name] = [];
               if (input.checked) obj[name].push(val);
             } else {
               if (_typeof(obj[name]) !== 'object') obj[name] = {};
@@ -230,54 +183,58 @@ module.exports = function () {
       key: 'parse',
       value: function parse() {
         var args = [this.form, this.options];
-        return _.merge(this.getInputs.apply(this, args), this.getTextAreas.apply(this, args), this.getSelects.apply(this, args), this.getButtons.apply(this, args));
+        return merge(this.getInputs.apply(this, args), this.getTextAreas.apply(this, args), this.getSelects.apply(this, args), this.getButtons.apply(this, args));
       }
     }]);
 
     return FinalForm;
   }();
 
-  var CustomFinalForm = function () {
-    function CustomFinalForm() {
-      _classCallCheck(this, CustomFinalForm);
+  function createCustomFinalForm() {
+    var forms = [];
+    var fields = [];
 
-      this.forms = [];
-      this.fields = [];
-    }
+    var CustomFinalForm = function () {
+      function CustomFinalForm() {
+        _classCallCheck(this, CustomFinalForm);
+      }
 
-    _createClass(CustomFinalForm, [{
-      key: 'defineField',
-      value: function defineField(name, getter) {
-        this.fields.push({ name: name, getter: getter });
-        return this;
-      }
-    }, {
-      key: 'attachForm',
-      value: function attachForm(form) {
-        FinalForm.validateFormElement(form);
-        this.forms.push(new FinalForm(form));
-        return this;
-      }
-    }, {
-      key: 'parse',
-      value: function parse() {
-        var obj = _.merge(this.forms.map(function (form) {
-          return form.parse();
-        }));
-        (0, _lodash4.default)(this.fields, function (fieldObj) {
-          obj[fieldObj.name] = fieldObj.getter();
-        });
-        return obj;
-      }
-    }, {
-      key: 'serialize',
-      value: function serialize() {
-        return FinalForm.serialize(this.parse());
-      }
-    }]);
+      _createClass(CustomFinalForm, [{
+        key: 'defineField',
+        value: function defineField(name, getter) {
+          fields.push({ name: name, getter: getter });
+          return this;
+        }
+      }, {
+        key: 'attachForm',
+        value: function attachForm(form) {
+          FinalForm.validateFormElement(form);
+          forms.push(new FinalForm(form));
+          return this;
+        }
+      }, {
+        key: 'parse',
+        value: function parse() {
+          var obj = merge((0, _lodash8.default)(forms, function (form) {
+            return form.parse();
+          }));
+          (0, _lodash4.default)(fields, function (fieldObj) {
+            obj[fieldObj.name] = fieldObj.getter();
+          });
+          return obj;
+        }
+      }, {
+        key: 'serialize',
+        value: function serialize() {
+          return FinalForm.serialize(this.parse());
+        }
+      }]);
 
-    return CustomFinalForm;
-  }();
+      return CustomFinalForm;
+    }();
+
+    return new CustomFinalForm();
+  }
 
   return {
     parse: function parse(form, options) {
@@ -288,10 +245,8 @@ module.exports = function () {
       var ff = new FinalForm(form, options);
       return FinalForm.serialize(ff.parse());
     },
-
-    merge: _.merge,
     create: function create(form) {
-      var customParser = new CustomFinalForm();
+      var customParser = createCustomFinalForm();
       if (form) customParser.attachForm(form);
       return customParser;
     }

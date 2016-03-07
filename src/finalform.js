@@ -8,68 +8,20 @@
 
 import flatten from 'lodash.flatten';
 import each from 'lodash.foreach';
+import isArray from 'lodash.isarray';
+import map from 'lodash.map';
 
 module.exports = (function() {
-  const _ = {
-    isArray: obj => {
-      return typeof obj === 'object' &&
-      (Array.isArray && Array.isArray(obj) || obj.constructor === Array || obj instanceof Array);
-    },
-
-    // map array
-    map(list, func) {
-      if (!list || !list.length)
-        return [];
-      const arr = [];
-      for (let i = 0, ii = list.length; i < ii; i++)
-        arr.push(func(list[i]));
-      return arr;
-    },
-
-    // filter array
-    filter(list, func) {
-      if (!list || !list.length)
-        return [];
-      const arr = [];
-      for (let i = 0, ii = list.length; i < ii; i++) {
-        if (func(list[i]))
-          arr.push(list[i]);
-      }
-      return arr;
-    },
-
-    // merge objects
-    merge(...args) {
-      const obj = {};
-      each(flatten(args), arg => {
-        if (!arg || typeof arg !== 'object') return;
-
-        each(Object.keys(arg), key => {
-          obj[key] = arg[key];
-        });
+  function merge(...args) {
+    const obj = {};
+    each(flatten(args), arg => {
+      if (!arg || typeof arg !== 'object') return;
+      each(Object.keys(arg), key => {
+        obj[key] = arg[key];
       });
-      return obj;
-    },
-
-    toArray(list, ...args) {
-      if (args && args.length) {
-        let arr = [];
-        arr = arr.concat(list);
-        this.each(args, arg => {
-          arr = arr.concat(arg);
-        });
-        return arr;
-      }
-      else if (!list || !list.length)
-        return [list];
-      else if (this.isArray(list))
-        return list;
-      const arr = [];
-      for (let i = 0, ii = list.length; i < ii; i++)
-        arr.push(list[i]);
-      return arr;
-    }
-  };
+    });
+    return obj;
+  }
 
   class FinalForm {
     static validateFormElement(form) {
@@ -112,7 +64,7 @@ module.exports = (function() {
         if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number')
           str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';
 
-        else if (_.isArray(obj[key])) {
+        else if (isArray(obj[key])) {
           let valueStr = '';
           each(obj[key], a => { valueStr += a + ','; });
           valueStr = valueStr.slice(0, -1);
@@ -173,7 +125,7 @@ module.exports = (function() {
 
         if (type === 'checkbox') {
           if (this.options.checkboxesAsArray) {
-            if (!_.isArray(obj[name]))
+            if (!isArray(obj[name]))
               obj[name] = [];
             if (input.checked)
               obj[name].push(val);
@@ -225,7 +177,7 @@ module.exports = (function() {
 
     parse() {
       const args = [this.form, this.options];
-      return _.merge(
+      return merge(
         this.getInputs(...args),
         this.getTextAreas(...args),
         this.getSelects(...args),
@@ -235,31 +187,38 @@ module.exports = (function() {
 
   }
 
-  class CustomFinalForm {
-    constructor() {
-      this.forms = [];
-      this.fields = [];
+
+  function createCustomFinalForm() {
+    const forms = [];
+    const fields = [];
+
+    class CustomFinalForm {
+      constructor() {
+      }
+      defineField(name, getter) {
+        fields.push({ name, getter });
+        return this;
+      }
+      attachForm(form) {
+        FinalForm.validateFormElement(form);
+        forms.push(new FinalForm(form));
+        return this;
+      }
+      parse() {
+        const obj = merge(map(forms, form => form.parse()));
+        each(fields,  fieldObj => {
+          obj[fieldObj.name] = fieldObj.getter();
+        });
+        return obj;
+      }
+      serialize() {
+        return FinalForm.serialize(this.parse());
+      }
     }
-    defineField(name, getter) {
-      this.fields.push({ name, getter });
-      return this;
-    }
-    attachForm(form) {
-      FinalForm.validateFormElement(form);
-      this.forms.push(new FinalForm(form));
-      return this;
-    }
-    parse() {
-      const obj = _.merge(this.forms.map(form => form.parse()));
-      each(this.fields,  fieldObj => {
-        obj[fieldObj.name] = fieldObj.getter();
-      });
-      return obj;
-    }
-    serialize() {
-      return FinalForm.serialize(this.parse());
-    }
+
+    return new CustomFinalForm();
   }
+  
 
   return {
     parse(form, options) {
@@ -271,7 +230,7 @@ module.exports = (function() {
       return FinalForm.serialize(ff.parse());
     },
     create(form) {
-      const customParser = new CustomFinalForm();
+      const customParser = createCustomFinalForm();
       if (form)
         customParser.attachForm(form);
       return customParser;
