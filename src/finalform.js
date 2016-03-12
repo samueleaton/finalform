@@ -13,6 +13,7 @@ import map from 'lodash.map';
 import isPlainObject from 'lodash.isplainobject';
 import forOwn from 'lodash.forown';
 import has from 'lodash.has';
+import includes from 'lodash.includes';
 
 module.exports = (function() {
   function merge(...args) {
@@ -195,6 +196,8 @@ module.exports = (function() {
     const forms = [];
     const fields = [];
     const mappedFields = {};
+    const fieldsToFilter = [];
+    const parseActions = [];
 
     class CustomFinalForm {
       constructor() {
@@ -218,18 +221,36 @@ module.exports = (function() {
             return console.error('FinalForm Error: mapFields object values must be strings.');
           mappedFields[k] = v;
         });
+        parseActions.push(parsedObj => {
+          forOwn(mappedFields, (v, k) => {
+            if (has(parsedObj, k)) {
+              parsedObj[v] = parsedObj[k];
+              delete parsedObj[k];
+            }
+          });
+        });
+      }
+      filterFields(..._fields) {
+        each(flatten(_fields), f => {
+          fieldsToFilter.push(f);
+        });
+        parseActions.push(obj => {
+          forOwn(obj, (v, k) => {
+            if (!includes(fieldsToFilter, k))
+              delete obj[k];
+          });
+        });
       }
       parse() {
         const obj = merge(map(forms, form => form.parse()));
         each(fields,  fieldObj => {
           obj[fieldObj.name] = fieldObj.getter();
         });
-        forOwn(mappedFields, (v, k) => {
-          if (has(obj, k)) {
-            obj[v] = obj[k];
-            delete obj[k];
-          }
+        
+        each(parseActions, cb => {
+          cb(obj);
         });
+
         return obj;
       }
       serialize() {

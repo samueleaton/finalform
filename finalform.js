@@ -38,6 +38,10 @@ var _lodash13 = require('lodash.has');
 
 var _lodash14 = _interopRequireDefault(_lodash13);
 
+var _lodash15 = require('lodash.includes');
+
+var _lodash16 = _interopRequireDefault(_lodash15);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -206,6 +210,8 @@ module.exports = function () {
     var forms = [];
     var fields = [];
     var mappedFields = {};
+    var fieldsToFilter = [];
+    var parseActions = [];
 
     var CustomFinalForm = function () {
       function CustomFinalForm() {
@@ -236,6 +242,30 @@ module.exports = function () {
             if (typeof v !== 'string') return console.error('FinalForm Error: mapFields object values must be strings.');
             mappedFields[k] = v;
           });
+          parseActions.push(function (parsedObj) {
+            (0, _lodash12.default)(mappedFields, function (v, k) {
+              if ((0, _lodash14.default)(parsedObj, k)) {
+                parsedObj[v] = parsedObj[k];
+                delete parsedObj[k];
+              }
+            });
+          });
+        }
+      }, {
+        key: 'filterFields',
+        value: function filterFields() {
+          for (var _len2 = arguments.length, _fields = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            _fields[_key2] = arguments[_key2];
+          }
+
+          (0, _lodash4.default)((0, _lodash2.default)(_fields), function (f) {
+            fieldsToFilter.push(f);
+          });
+          parseActions.push(function (obj) {
+            (0, _lodash12.default)(obj, function (v, k) {
+              if (!(0, _lodash16.default)(fieldsToFilter, k)) delete obj[k];
+            });
+          });
         }
       }, {
         key: 'parse',
@@ -246,12 +276,11 @@ module.exports = function () {
           (0, _lodash4.default)(fields, function (fieldObj) {
             obj[fieldObj.name] = fieldObj.getter();
           });
-          (0, _lodash12.default)(mappedFields, function (v, k) {
-            if ((0, _lodash14.default)(obj, k)) {
-              obj[v] = obj[k];
-              delete obj[k];
-            }
+
+          (0, _lodash4.default)(parseActions, function (cb) {
+            cb(obj);
           });
+
           return obj;
         }
       }, {
