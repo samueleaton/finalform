@@ -194,7 +194,7 @@ module.exports = (function() {
 
   function createCustomFinalForm() {
     const forms = [];
-    const fields = [];
+    const definedFields = [];
     const mappedFields = {};
     const fieldsToFilter = [];
     const parseActions = [];
@@ -203,7 +203,7 @@ module.exports = (function() {
       constructor() {
       }
       defineField(name, getter) {
-        fields.push({ name, getter });
+        definedFields.push({ name, getter });
         return this;
       }
       attachForm(form) {
@@ -245,7 +245,7 @@ module.exports = (function() {
       }
       parse() {
         const obj = merge(map(forms, form => form.parse()));
-        each(fields,  fieldObj => {
+        each(definedFields,  fieldObj => {
           obj[fieldObj.name] = fieldObj.getter();
         });
         
