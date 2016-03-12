@@ -229,6 +229,7 @@ module.exports = (function() {
             }
           });
         });
+        return this;
       }
       filterFields(..._fields) {
         each(flatten(_fields), f => {
@@ -240,6 +241,7 @@ module.exports = (function() {
               delete obj[k];
           });
         });
+        return this;
       }
       parse() {
         const obj = merge(map(forms, form => form.parse()));

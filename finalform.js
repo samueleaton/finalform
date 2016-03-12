@@ -250,6 +250,7 @@ module.exports = function () {
               }
             });
           });
+          return this;
         }
       }, {
         key: 'filterFields',
@@ -266,6 +267,7 @@ module.exports = function () {
               if (!(0, _lodash16.default)(fieldsToFilter, k)) delete obj[k];
             });
           });
+          return this;
         }
       }, {
         key: 'parse',

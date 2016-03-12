@@ -349,6 +349,7 @@
 	              }
 	            });
 	          });
+	          return this;
 	        }
 	      }, {
 	        key: 'filterFields',
@@ -365,6 +366,7 @@
 	              if (!(0, _lodash16.default)(fieldsToFilter, k)) delete obj[k];
 	            });
 	          });
+	          return this;
 	        }
 	      }, {
 	        key: 'parse',
