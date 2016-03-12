@@ -10,6 +10,9 @@ import flatten from 'lodash.flatten';
 import each from 'lodash.foreach';
 import isArray from 'lodash.isarray';
 import map from 'lodash.map';
+import isPlainObject from 'lodash.isplainobject';
+import forOwn from 'lodash.forown';
+import has from 'lodash.has';
 
 module.exports = (function() {
   function merge(...args) {
@@ -191,6 +194,7 @@ module.exports = (function() {
   function createCustomFinalForm() {
     const forms = [];
     const fields = [];
+    const mappedFields = {};
 
     class CustomFinalForm {
       constructor() {
@@ -204,10 +208,27 @@ module.exports = (function() {
         forms.push(new FinalForm(form));
         return this;
       }
+      mapFields(obj) {
+        if (!isPlainObject(obj)) {
+          console.error('FinalForm Error: Must pass plain object to mapFields');
+          return this;
+        }
+        forOwn(obj, (v, k) => {
+          if (typeof v !== 'string')
+            return console.error('FinalForm Error: mapFields object values must be strings.');
+          mappedFields[k] = v;
+        });
+      }
       parse() {
         const obj = merge(map(forms, form => form.parse()));
         each(fields,  fieldObj => {
           obj[fieldObj.name] = fieldObj.getter();
+        });
+        forOwn(mappedFields, (v, k) => {
+          if (has(obj, k)) {
+            obj[v] = obj[k];
+            delete obj[k];
+          }
         });
         return obj;
       }

@@ -26,6 +26,18 @@ var _lodash7 = require('lodash.map');
 
 var _lodash8 = _interopRequireDefault(_lodash7);
 
+var _lodash9 = require('lodash.isplainobject');
+
+var _lodash10 = _interopRequireDefault(_lodash9);
+
+var _lodash11 = require('lodash.forown');
+
+var _lodash12 = _interopRequireDefault(_lodash11);
+
+var _lodash13 = require('lodash.has');
+
+var _lodash14 = _interopRequireDefault(_lodash13);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -193,6 +205,7 @@ module.exports = function () {
   function createCustomFinalForm() {
     var forms = [];
     var fields = [];
+    var mappedFields = {};
 
     var CustomFinalForm = function () {
       function CustomFinalForm() {
@@ -213,6 +226,18 @@ module.exports = function () {
           return this;
         }
       }, {
+        key: 'mapFields',
+        value: function mapFields(obj) {
+          if (!(0, _lodash10.default)(obj)) {
+            console.error('FinalForm Error: Must pass plain object to mapFields');
+            return this;
+          }
+          (0, _lodash12.default)(obj, function (v, k) {
+            if (typeof v !== 'string') return console.error('FinalForm Error: mapFields object values must be strings.');
+            mappedFields[k] = v;
+          });
+        }
+      }, {
         key: 'parse',
         value: function parse() {
           var obj = merge((0, _lodash8.default)(forms, function (form) {
@@ -220,6 +245,12 @@ module.exports = function () {
           }));
           (0, _lodash4.default)(fields, function (fieldObj) {
             obj[fieldObj.name] = fieldObj.getter();
+          });
+          (0, _lodash12.default)(mappedFields, function (v, k) {
+            if ((0, _lodash14.default)(obj, k)) {
+              obj[v] = obj[k];
+              delete obj[k];
+            }
           });
           return obj;
         }
