@@ -1018,6 +1018,10 @@ body .markdown-body
 <p>HTML form fields parser</p>
 <p><img src="https://img.shields.io/badge/license-MIT-blue.svg"></p>
 <h2 id="usage"><a name="user-content-usage" href="#usage" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Usage</h2>
+<p>There are two ways to use FinalForm:</p>
+<p>1) A static form parser<br />
+2) A custom form parser</p>
+<h3 id="static-form-parser"><a name="user-content-static-form-parser" href="#static-form-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Static Form Parser</h3>
 <p>Simply pass a form object into one of two methods:</p>
 <ul>
 <li><code>parse</code></li>
@@ -1045,6 +1049,7 @@ const serializedForm = finalform.serialize(form);
 <ul>
 <li><strong><code>trim</code></strong> - removes all spaces from beginning and end of string (defaults to <code>true</code>)</li>
 <li><strong><code>compress</code></strong> - compress multiple sequential blank spaces to a single space (defaults to <code>true</code>)</li>
+<li><strong><code>checkboxesAsArray</code></strong> - store check boxes as an array of selected boxes rather than an object of <code>true</code>/<code>false</code> value. (defaults to <code>false</code>)</li>
 <li><strong><code>toUpperCase</code></strong> - convert values to uppercase (defaults to <code>false</code>)</li>
 <li><strong><code>toLowerCase</code></strong> - convert values to lowercase (defaults to <code>false</code>)</li>
 <li><strong><code>modify</code></strong> - a <code>false</code> value turns all other options to <code>false</code> (defaults to <code>true</code>)</li>
@@ -1055,5 +1060,60 @@ const serializedForm = finalform.serialize(form);
 const form = document.querySelector('#myForm');
 const formObj = finalform.parse(form, {
     trim: false, compress: false, toUpperCase: true
+});
+</code></pre>
+
+<h3 id="custom-form-parser"><a name="user-content-custom-form-parser" href="#custom-form-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Custom Form Parser</h3>
+<h4 id="creating-a-custom-parser"><a name="user-content-creating-a-custom-parser" href="#creating-a-custom-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Creating a Custom Parser</h4>
+<p>Create a custom parser using the <code>create</code> method.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+</code></pre>
+
+<h4 id="adding-forms-to-custom-parser"><a name="user-content-adding-forms-to-custom-parser" href="#adding-forms-to-custom-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Adding Forms to Custom Parser</h4>
+<p>You can add as many forms as you want to the custom parser using the <code>forms</code> method, it will parse them all at one.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+customParser.forms(myForm1, myForm2);
+</code></pre>
+
+<h4 id="running-the-custom-parser"><a name="user-content-running-the-custom-parser" href="#running-the-custom-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Running the Custom Parser</h4>
+<p>Run the Custom Parser with the <code>parse</code> method.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+customParser.parse();
+</code></pre>
+
+<p>The format of the parser is an <code>Object</code> with the following properties:</p>
+<ul>
+<li>fields - an object of all of the parsed fields and their values</li>
+<li>isValid - is <code>true</code> if there are no invalid fields, otherwise is false</li>
+<li>invalidFields - array of invalid fields (see <code>validations</code> method below)</li>
+<li>validFields - array of valid fields (see <code>validations</code> method below)</li>
+</ul>
+<p><strong>Filtering the Parsed Result</strong></p>
+<p>You can define the <code>pick</code> property (inspired by lodash) to choose which field to return from the parser.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+customParser.parse({
+  pick: ['email', 'phone']
+});
+</code></pre>
+
+<p><strong>Changing Key Names of the Parsed Result</strong></p>
+<p>You can define the <code>map</code> property to change the name of the key for the field.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+customParser.parse({
+  map: {email: 'user-email', phone: 'home-phone-number']
+});
+</code></pre>
+
+<h3 id="custom-field-validations"><a name="user-content-custom-field-validations" href="#custom-field-validations" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Custom Field Validations</h3>
+<p>To set custom validations, use the <code>validations</code> method before <code>parse</code>. Pass an object of key value pairs where the value is a function whose first paramter is the html form element where the field gets it value from.</p>
+<pre><code class="javascript">parser.validations({
+  email: element =&gt; {
+    if (element.value.trim().length)
+      return true;
+  },
+  phone: element =&gt; {
+    if (element.value.trim().length)
+      return true;
+  }
 });
 </code></pre></article></body></html>

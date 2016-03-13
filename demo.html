@@ -21,6 +21,9 @@
     padding :4px;
     color:rgb(0,160,100);
   }
+  input.error {
+    outline:1px solid red;
+  }
   </style>
 </head>
 <body>
@@ -127,7 +130,7 @@
   <br><br>
 
   Merge other objects using the <code>merge</code> method.
-  
+
   <br><br>
 
   Example <code>finalform.merge( finalform.parse(form), {externalTa: externalTa.value} );</code>

@@ -10,37 +10,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _lodash = require('lodash.flatten');
+var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-var _lodash3 = require('lodash.foreach');
-
-var _lodash4 = _interopRequireDefault(_lodash3);
-
-var _lodash5 = require('lodash.isarray');
-
-var _lodash6 = _interopRequireDefault(_lodash5);
-
-var _lodash7 = require('lodash.map');
-
-var _lodash8 = _interopRequireDefault(_lodash7);
-
-var _lodash9 = require('lodash.isplainobject');
-
-var _lodash10 = _interopRequireDefault(_lodash9);
-
-var _lodash11 = require('lodash.forown');
-
-var _lodash12 = _interopRequireDefault(_lodash11);
-
-var _lodash13 = require('lodash.has');
-
-var _lodash14 = _interopRequireDefault(_lodash13);
-
-var _lodash15 = require('lodash.includes');
-
-var _lodash16 = _interopRequireDefault(_lodash15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -54,9 +26,9 @@ module.exports = function () {
       args[_key] = arguments[_key];
     }
 
-    (0, _lodash4.default)((0, _lodash2.default)(args), function (arg) {
+    _lodash2.default.each(_lodash2.default.flatten(args), function (arg) {
       if (!arg || (typeof arg === 'undefined' ? 'undefined' : _typeof(arg)) !== 'object') return;
-      (0, _lodash4.default)(Object.keys(arg), function (key) {
+      _lodash2.default.each(_lodash2.default.keys(arg), function (key) {
         obj[key] = arg[key];
       });
     });
@@ -93,11 +65,11 @@ module.exports = function () {
 
         if (!obj || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') return str;
 
-        (0, _lodash4.default)(Object.keys(obj), function (key) {
+        _lodash2.default.each(_lodash2.default.keys(obj), function (key) {
 
-          if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number') str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';else if ((0, _lodash6.default)(obj[key])) {
+          if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number') str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';else if (_lodash2.default.isArray(obj[key])) {
             var valueStr = '';
-            (0, _lodash4.default)(obj[key], function (a) {
+            _lodash2.default.each(obj[key], function (a) {
               valueStr += a + ',';
             });
             valueStr = valueStr.slice(0, -1);
@@ -135,12 +107,13 @@ module.exports = function () {
         var _this = this;
 
         var obj = {};
+        var elementMap = {};
 
-        (0, _lodash4.default)(this.form.getElementsByTagName('input'), function (input, i) {
+        _lodash2.default.each(this.form.getElementsByTagName('input'), function (element, i) {
 
-          var type = input.type || 'text';
-          var name = FinalForm.getFieldName(input) || FinalForm.generateKeyName(obj, 'input', type);
-          var val = input.value;
+          var type = element.type || 'text';
+          var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(obj, 'input', type);
+          var val = element.value;
 
           if (_this.options.trim !== false) val = val.trim();
 
@@ -152,48 +125,50 @@ module.exports = function () {
 
           if (type === 'checkbox') {
             if (_this.options.checkboxesAsArray) {
-              if (!(0, _lodash6.default)(obj[name])) obj[name] = [];
-              if (input.checked) obj[name].push(val);
+              if (!_lodash2.default.isArray(obj[name])) obj[name] = [];
+              if (element.checked) obj[name].push(val);
             } else {
               if (_typeof(obj[name]) !== 'object') obj[name] = {};
-              obj[name][val] = input.checked;
+              obj[name][val] = element.checked;
             }
           } else if (type === 'radio') {
             if (typeof obj[name] === 'undefined') obj[name] = '';
-            if (input.checked) obj[name] = val;
+            if (element.checked) obj[name] = val;
           } else obj[name] = val;
+
+          elementMap[name] = { name: name, element: element, value: obj[name] };
         });
-        return obj;
+        return elementMap;
       }
     }, {
       key: 'getSelects',
       value: function getSelects(parent) {
-        var obj = {};
-        (0, _lodash4.default)(parent.getElementsByTagName('select'), function (select, i) {
-          var name = FinalForm.getFieldName(select) || FinalForm.generateKeyName(obj, 'select');
-          obj[name] = select.value;
+        var elementMap = {};
+        _lodash2.default.each(parent.getElementsByTagName('select'), function (element, i) {
+          var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'select');
+          elementMap[name] = { name: name, element: element, value: element.value };
         });
-        return obj;
+        return elementMap;
       }
     }, {
       key: 'getTextAreas',
       value: function getTextAreas(parent) {
-        var obj = {};
-        (0, _lodash4.default)(parent.getElementsByTagName('textarea'), function (ta, i) {
-          var name = FinalForm.getFieldName(ta) || FinalForm.generateKeyName(obj, 'textarea');
-          obj[name] = ta.value;
+        var elementMap = {};
+        _lodash2.default.each(parent.getElementsByTagName('textarea'), function (element, i) {
+          var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
+          elementMap[name] = { name: name, element: element, value: element.value };
         });
-        return obj;
+        return elementMap;
       }
     }, {
       key: 'getButtons',
       value: function getButtons(parent) {
-        var obj = {};
-        (0, _lodash4.default)(parent.getElementsByTagName('button'), function (btn, i) {
-          var name = FinalForm.getFieldName(btn) || FinalForm.generateKeyName(obj, 'button');
-          obj[name] = btn.value;
+        var elementMap = {};
+        _lodash2.default.each(parent.getElementsByTagName('button'), function (element, i) {
+          var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');
+          elementMap[name] = { name: name, element: element, value: element.value };
         });
-        return obj;
+        return elementMap;
       }
     }, {
       key: 'parse',
@@ -207,11 +182,76 @@ module.exports = function () {
   }();
 
   function createCustomFinalForm() {
-    var forms = [];
-    var fields = [];
-    var mappedFields = {};
-    var fieldsToFilter = [];
-    var parseActions = [];
+    var _forms = [];
+    var definedFields = [];
+    var parseActionQueue = [];
+    var mappedKeysAndValues = {};
+    var keysToPick = [];
+    var keyMap = {};
+    var validationsCallbacks = {};
+
+    function processParseConfig(parseConfig) {
+      if (parseConfig.map) {
+        if (!_lodash2.default.isPlainObject(parseConfig.map)) {
+          console.error('FinalForm Error: map must be a plain object');
+          return;
+        }
+        _lodash2.default.forOwn(parseConfig.map, function (mapValue, mapKey) {
+          mappedKeysAndValues[mapKey] = mapValue;
+          mappedKeysAndValues[mapValue] = mapKey;
+          keyMap[mapKey] = mapValue;
+        });
+      }
+
+      if (parseConfig.pick) {
+        if (!_lodash2.default.isArray(parseConfig.pick)) {
+          console.error('FinalForm Error: pick must be an array');
+          return;
+        }
+        _lodash2.default.each(parseConfig.pick, function (field) {
+          if (mappedKeysAndValues[field]) keysToPick.push(mappedKeysAndValues[field]);
+          keysToPick.push(field);
+        });
+      }
+    }
+
+    function validateFormObj(formObj) {
+      var validFieldsKeys = _lodash2.default.keys(formObj);
+      var validFields = [];
+      var invalidFields = [];
+
+      _lodash2.default.forOwn(validationsCallbacks, function (cb, k) {
+        if (!_lodash2.default.has(formObj, k)) return console.error('FinalForm Error: cannot validate "' + k + '". Not found.');
+        var isValid = cb(formObj[k].element || formObj[k].value);
+        if (!isValid) {
+          invalidFields.push(formObj[k]);
+          _lodash2.default.remove(validFieldsKeys, function (key) {
+            return key === k;
+          });
+        }
+      });
+      _lodash2.default.each(validFieldsKeys, function (key) {
+        validFields.push(formObj[key]);
+      });
+      return {
+        validFields: validFields, invalidFields: invalidFields, isValid: invalidFields.length === 0
+      };
+    }
+
+    function mapKeys(formObj) {
+      _lodash2.default.forOwn(keyMap, function (v, k) {
+        if (_lodash2.default.has(formObj, k)) {
+          formObj[v] = formObj[k];
+          delete formObj[k];
+        }
+      });
+    }
+
+    function pickKeys(formObj) {
+      _lodash2.default.forOwn(formObj, function (v, k) {
+        if (!_lodash2.default.includes(keysToPick, k)) delete formObj[k];
+      });
+    }
 
     var CustomFinalForm = function () {
       function CustomFinalForm() {
@@ -221,69 +261,80 @@ module.exports = function () {
       _createClass(CustomFinalForm, [{
         key: 'defineField',
         value: function defineField(name, getter) {
-          fields.push({ name: name, getter: getter });
+          definedFields.push({ name: name, getter: getter });
           return this;
         }
       }, {
-        key: 'attachForm',
-        value: function attachForm(form) {
-          FinalForm.validateFormElement(form);
-          forms.push(new FinalForm(form));
-          return this;
-        }
-      }, {
-        key: 'mapFields',
-        value: function mapFields(obj) {
-          if (!(0, _lodash10.default)(obj)) {
-            console.error('FinalForm Error: Must pass plain object to mapFields');
-            return this;
-          }
-          (0, _lodash12.default)(obj, function (v, k) {
-            if (typeof v !== 'string') return console.error('FinalForm Error: mapFields object values must be strings.');
-            mappedFields[k] = v;
-          });
-          parseActions.push(function (parsedObj) {
-            (0, _lodash12.default)(mappedFields, function (v, k) {
-              if ((0, _lodash14.default)(parsedObj, k)) {
-                parsedObj[v] = parsedObj[k];
-                delete parsedObj[k];
-              }
-            });
-          });
-          return this;
-        }
-      }, {
-        key: 'filterFields',
-        value: function filterFields() {
-          for (var _len2 = arguments.length, _fields = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            _fields[_key2] = arguments[_key2];
+        key: 'forms',
+        value: function forms() {
+          for (var _len2 = arguments.length, arr = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            arr[_key2] = arguments[_key2];
           }
 
-          (0, _lodash4.default)((0, _lodash2.default)(_fields), function (f) {
-            fieldsToFilter.push(f);
-          });
-          parseActions.push(function (obj) {
-            (0, _lodash12.default)(obj, function (v, k) {
-              if (!(0, _lodash16.default)(fieldsToFilter, k)) delete obj[k];
-            });
+          _lodash2.default.each(_lodash2.default.flatten(arr), function (form) {
+            FinalForm.validateFormElement(form);
+            _forms.push(new FinalForm(form));
           });
           return this;
+        }
+      }, {
+        key: 'validations',
+        value: function validations(validationsObj) {
+          if (!_lodash2.default.isPlainObject(validationsObj)) {
+            console.error('FinalForm Error: Must pass plain object to validations');
+            return this;
+          }
+          _lodash2.default.forOwn(validationsObj, function (v, k) {
+            if (typeof v !== 'function') return console.error('FinalForm Error: validation must be a function');
+            validationsCallbacks[k] = v;
+          });
         }
       }, {
         key: 'parse',
-        value: function parse() {
-          var obj = merge((0, _lodash8.default)(forms, function (form) {
+        value: function parse(parseConfig) {
+          if (parseConfig) {
+            if (!_lodash2.default.isPlainObject(parseConfig)) {
+              console.error('FinalForm Error: Must pass plain object or undefined to parse');
+              return this;
+            }
+            processParseConfig(parseConfig);
+          }
+
+          var formObj = merge(_lodash2.default.map(_forms, function (form) {
             return form.parse();
           }));
-          (0, _lodash4.default)(fields, function (fieldObj) {
-            obj[fieldObj.name] = fieldObj.getter();
+
+          _lodash2.default.each(definedFields, function (definedField) {
+            formObj[definedField.name] = {
+              value: definedField.getter(),
+              name: definedField.name,
+              element: null
+            };
           });
 
-          (0, _lodash4.default)(parseActions, function (cb) {
-            cb(obj);
+          var resObj = {
+            isValid: true,
+            invalidFields: [],
+            validFields: [],
+            fields: {}
+          };
+
+          if (!_lodash2.default.isEmpty(validationsCallbacks)) {
+            var validationResObj = validateFormObj(formObj);
+            resObj.isValid = validationResObj.isValid;
+            resObj.invalidFields = validationResObj.invalidFields;
+            resObj.validFields = validationResObj.validFields;
+          }
+
+          if (keysToPick.length) pickKeys(formObj);
+
+          if (!_lodash2.default.isEmpty(keyMap)) mapKeys(formObj);
+
+          _lodash2.default.forOwn(formObj, function (v, k) {
+            resObj.fields[k] = v.value;
           });
 
-          return obj;
+          return resObj;
         }
       }, {
         key: 'serialize',
@@ -301,15 +352,18 @@ module.exports = function () {
   return {
     parse: function parse(form, options) {
       var ff = new FinalForm(form, options);
-      return ff.parse();
+      var parsedObj = ff.parse();
+      _lodash2.default.forOwn(parsedObj, function (v, k) {
+        parsedObj[k] = v.value;
+      });
+      return parsedObj;
     },
     serialize: function serialize(form, options) {
-      var ff = new FinalForm(form, options);
-      return FinalForm.serialize(ff.parse());
+      return FinalForm.serialize(this.parse(form, options));
     },
-    create: function create(form) {
+    create: function create() {
       var customParser = createCustomFinalForm();
-      if (form) customParser.attachForm(form);
+      if (arguments.length) customParser.forms.apply(customParser, arguments);
       return customParser;
     }
   };

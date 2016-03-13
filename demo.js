@@ -23,4 +23,30 @@ form.addEventListener('submit', evt => {
 
 });
 
+// configs
+const parser = finalform.create();
+parser.forms(form);
+parser.validations({
+  email: element => {
+    if (element.value.trim().length)
+      return true;
+  },
+  giant: fieldVal => fieldVal > 10
+})
+parser.defineField('giant', () => {
+  return 11;
+})
+// // post parsers
+const parsedForm = parser.parse({
+  pick: ['email', 'phone', 'giant'],
+  map: { phone: 'superPhone' }
+});
+console.log('parsedForm: ', parsedForm);
+window.parser = parser;
 
+// {
+//   isValid: true,
+//   invalidFields: [{name: 'x', element: HTMLElement, value: 11}],
+//   validFields: [],
+//   fields: {}
+// }

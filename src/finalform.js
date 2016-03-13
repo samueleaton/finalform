@@ -6,21 +6,14 @@
 
 'use strict';
 
-import flatten from 'lodash.flatten';
-import each from 'lodash.foreach';
-import isArray from 'lodash.isarray';
-import map from 'lodash.map';
-import isPlainObject from 'lodash.isplainobject';
-import forOwn from 'lodash.forown';
-import has from 'lodash.has';
-import includes from 'lodash.includes';
+import _ from 'lodash';
 
 module.exports = (function() {
   function merge(...args) {
     const obj = {};
-    each(flatten(args), arg => {
+    _.each(_.flatten(args), arg => {
       if (!arg || typeof arg !== 'object') return;
-      each(Object.keys(arg), key => {
+      _.each(_.keys(arg), key => {
         obj[key] = arg[key];
       });
     });
@@ -31,10 +24,9 @@ module.exports = (function() {
     static validateFormElement(form) {
       if (
         form && (
-          !(form instanceof HTMLElement) || (
-            form.tagName &&
-            form.tagName.toUpperCase() !== 'FORM'
-          )
+          !(form instanceof HTMLElement) ||
+          form.tagName &&
+          form.tagName.toUpperCase() !== 'FORM'
         )
       )
         throw 'Not a valid HMTL form element.';
@@ -63,14 +55,14 @@ module.exports = (function() {
 
       if (!obj || typeof obj !== 'object') return str;
 
-      each(Object.keys(obj), key => {
+      _.each(_.keys(obj), key => {
 
         if (!obj[key] || typeof obj[key] === 'string' || typeof obj[key] === 'number')
           str += encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]) + '&';
 
-        else if (isArray(obj[key])) {
+        else if (_.isArray(obj[key])) {
           let valueStr = '';
-          each(obj[key], a => { valueStr += a + ','; });
+          _.each(obj[key], a => { valueStr += a + ','; });
           valueStr = valueStr.slice(0, -1);
           str += encodeURIComponent(key) + '=' + encodeURIComponent(valueStr) + '&';
         }
@@ -106,14 +98,15 @@ module.exports = (function() {
     */
     getInputs() {
       const obj = {};
+      const elementMap = {};
 
-      each(this.form.getElementsByTagName('input'), (input, i) => {
+      _.each(this.form.getElementsByTagName('input'), (element, i) => {
 
-        const type = input.type || 'text';
-        const name = FinalForm.getFieldName(input) || FinalForm.generateKeyName(
+        const type = element.type || 'text';
+        const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
           obj, 'input', type
         );
-        let val = input.value;
+        let val = element.value;
 
         if (this.options.trim !== false)
           val = val.trim();
@@ -129,54 +122,57 @@ module.exports = (function() {
 
         if (type === 'checkbox') {
           if (this.options.checkboxesAsArray) {
-            if (!isArray(obj[name]))
+            if (!_.isArray(obj[name]))
               obj[name] = [];
-            if (input.checked)
+            if (element.checked)
               obj[name].push(val);
           }
           else {
             if (typeof obj[name] !== 'object')
               obj[name] = {};
-            obj[name][val] = input.checked;
+            obj[name][val] = element.checked;
           }
         }
         else if (type === 'radio') {
           if (typeof obj[name] === 'undefined')
             obj[name] = '';
-          if (input.checked)
+          if (element.checked)
             obj[name] = val;
         }
         else
           obj[name] = val;
+
+        elementMap[name] = { name, element, value: obj[name] };
+
       });
-      return obj;
+      return elementMap;
     }
 
     getSelects(parent) {
-      const obj = {};
-      each(parent.getElementsByTagName('select'), (select, i) => {
-        const name = FinalForm.getFieldName(select) || FinalForm.generateKeyName(obj, 'select');
-        obj[name] = select.value;
+      const elementMap = {};
+      _.each(parent.getElementsByTagName('select'), (element, i) => {
+        const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'select');
+        elementMap[name] = { name, element, value: element.value };
       });
-      return obj;
+      return elementMap;
     }
 
     getTextAreas(parent) {
-      const obj = {};
-      each(parent.getElementsByTagName('textarea'), (ta, i) => {
-        const name = FinalForm.getFieldName(ta) || FinalForm.generateKeyName(obj, 'textarea');
-        obj[name] = ta.value;
+      const elementMap = {};
+      _.each(parent.getElementsByTagName('textarea'), (element, i) => {
+        const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
+        elementMap[name] = { name, element, value: element.value };
       });
-      return obj;
+      return elementMap;
     }
 
     getButtons(parent) {
-      const obj = {};
-      each(parent.getElementsByTagName('button'), (btn, i) => {
-        const name = FinalForm.getFieldName(btn) || FinalForm.generateKeyName(obj, 'button');
-        obj[name] = btn.value;
+      const elementMap = {};
+      _.each(parent.getElementsByTagName('button'), (element, i) => {
+        const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');
+        elementMap[name] = { name, element, value: element.value };
       });
-      return obj;
+      return elementMap;
     }
 
     parse() {
@@ -195,9 +191,75 @@ module.exports = (function() {
   function createCustomFinalForm() {
     const forms = [];
     const definedFields = [];
-    const mappedFields = {};
-    const fieldsToFilter = [];
-    const parseActions = [];
+    const parseActionQueue = [];
+    const mappedKeysAndValues = {};
+    const keysToPick = [];
+    const keyMap = {};
+    const validationsCallbacks = {};
+
+    function processParseConfig(parseConfig) {
+      if (parseConfig.map) {
+        if (!_.isPlainObject(parseConfig.map)) {
+          console.error('FinalForm Error: map must be a plain object');
+          return;
+        }
+        _.forOwn(parseConfig.map, (mapValue, mapKey) => {
+          mappedKeysAndValues[mapKey] = mapValue;
+          mappedKeysAndValues[mapValue] = mapKey;
+          keyMap[mapKey] = mapValue;
+        });
+      }
+
+      if (parseConfig.pick) {
+        if (!_.isArray(parseConfig.pick)) {
+          console.error('FinalForm Error: pick must be an array');
+          return;
+        }
+        _.each(parseConfig.pick, field => {
+          if (mappedKeysAndValues[field])
+            keysToPick.push(mappedKeysAndValues[field]);
+          keysToPick.push(field);
+        });
+      }
+    }
+
+    function validateFormObj(formObj) {
+      const validFieldsKeys = _.keys(formObj);
+      const validFields = [];
+      const invalidFields = [];
+
+      _.forOwn(validationsCallbacks, (cb, k) => {
+        if (!_.has(formObj, k))
+          return console.error('FinalForm Error: cannot validate "' + k + '". Not found.');
+        const isValid = cb(formObj[k].element || formObj[k].value);
+        if (!isValid) {
+          invalidFields.push(formObj[k]);
+          _.remove(validFieldsKeys, key => key === k);
+        }
+      });
+      _.each(validFieldsKeys, key => {
+        validFields.push(formObj[key]);
+      });
+      return {
+        validFields, invalidFields, isValid: invalidFields.length === 0
+      };
+    }
+
+    function mapKeys(formObj) {
+      _.forOwn(keyMap, (v, k) => {
+        if (_.has(formObj, k)) {
+          formObj[v] = formObj[k];
+          delete formObj[k];
+        }
+      });
+    }
+
+    function pickKeys(formObj) {
+      _.forOwn(formObj, (v, k) => {
+        if (!_.includes(keysToPick, k))
+          delete formObj[k];
+      });
+    }
 
     class CustomFinalForm {
       constructor() {
@@ -206,54 +268,74 @@ module.exports = (function() {
         definedFields.push({ name, getter });
         return this;
       }
-      attachForm(form) {
-        FinalForm.validateFormElement(form);
-        forms.push(new FinalForm(form));
+
+      forms(...arr) {
+        _.each(_.flatten(arr), form => {
+          FinalForm.validateFormElement(form);
+          forms.push(new FinalForm(form));
+        });
         return this;
       }
-      mapFields(obj) {
-        if (!isPlainObject(obj)) {
-          console.error('FinalForm Error: Must pass plain object to mapFields');
+
+      validations(validationsObj) {
+        if (!_.isPlainObject(validationsObj)) {
+          console.error('FinalForm Error: Must pass plain object to validations');
           return this;
         }
-        forOwn(obj, (v, k) => {
-          if (typeof v !== 'string')
-            return console.error('FinalForm Error: mapFields object values must be strings.');
-          mappedFields[k] = v;
+        _.forOwn(validationsObj, (v, k) => {
+          if (typeof v !== 'function')
+            return console.error('FinalForm Error: validation must be a function');
+          validationsCallbacks[k] = v;
         });
-        parseActions.push(parsedObj => {
-          forOwn(mappedFields, (v, k) => {
-            if (has(parsedObj, k)) {
-              parsedObj[v] = parsedObj[k];
-              delete parsedObj[k];
-            }
-          });
-        });
-        return this;
       }
-      filterFields(..._fields) {
-        each(flatten(_fields), f => {
-          fieldsToFilter.push(f);
-        });
-        parseActions.push(obj => {
-          forOwn(obj, (v, k) => {
-            if (!includes(fieldsToFilter, k))
-              delete obj[k];
-          });
-        });
-        return this;
-      }
-      parse() {
-        const obj = merge(map(forms, form => form.parse()));
-        each(definedFields,  fieldObj => {
-          obj[fieldObj.name] = fieldObj.getter();
-        });
-        
-        each(parseActions, cb => {
-          cb(obj);
+
+      parse(parseConfig) {
+        if (parseConfig) {
+          if (!_.isPlainObject(parseConfig)) {
+            console.error('FinalForm Error: Must pass plain object or undefined to parse');
+            return this;
+          }
+          processParseConfig(parseConfig);
+        }
+
+        const formObj = merge(
+          _.map(forms, form => form.parse())
+        );
+
+        _.each(definedFields,  definedField => {
+          formObj[definedField.name] = {
+            value: definedField.getter(),
+            name: definedField.name,
+            element: null
+          };
         });
 
-        return obj;
+        const resObj = {
+          isValid: true,
+          invalidFields: [],
+          validFields: [],
+          fields: {}
+        };
+
+        if (!_.isEmpty(validationsCallbacks)) {
+          const validationResObj = validateFormObj(formObj);
+          resObj.isValid = validationResObj.isValid;
+          resObj.invalidFields = validationResObj.invalidFields;
+          resObj.validFields = validationResObj.validFields;
+        }
+
+        if (keysToPick.length)
+          pickKeys(formObj);
+
+        if (!_.isEmpty(keyMap))
+          mapKeys(formObj);
+
+
+        _.forOwn(formObj, (v, k) => {
+          resObj.fields[k] = v.value;
+        });
+
+        return resObj;
       }
       serialize() {
         return FinalForm.serialize(this.parse());
@@ -262,21 +344,24 @@ module.exports = (function() {
 
     return new CustomFinalForm();
   }
-  
+
 
   return {
     parse(form, options) {
       const ff = new FinalForm(form, options);
-      return ff.parse();
+      const parsedObj = ff.parse();
+      _.forOwn(parsedObj, (v, k) => {
+        parsedObj[k] = v.value;
+      });
+      return parsedObj;
     },
     serialize(form, options) {
-      const ff = new FinalForm(form, options);
-      return FinalForm.serialize(ff.parse());
+      return FinalForm.serialize(this.parse(form, options));
     },
-    create(form) {
+    create(...forms) {
       const customParser = createCustomFinalForm();
-      if (form)
-        customParser.attachForm(form);
+      if (forms.length)
+        customParser.forms(...forms);
       return customParser;
     }
   };
