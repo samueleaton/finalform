@@ -310,19 +310,14 @@ module.exports = (function() {
           };
         });
 
-        const resObj = {
+        let validationObj = {
           isValid: true,
           invalidFields: [],
-          validFields: [],
-          fields: {}
+          validFields: []
         };
 
-        if (!_.isEmpty(validationsCallbacks)) {
-          const validationResObj = validateFormObj(formObj);
-          resObj.isValid = validationResObj.isValid;
-          resObj.invalidFields = validationResObj.invalidFields;
-          resObj.validFields = validationResObj.validFields;
-        }
+        if (!_.isEmpty(validationsCallbacks))
+          validationObj = validateFormObj(formObj);
 
         if (keysToPick.length)
           pickKeys(formObj);
@@ -330,12 +325,27 @@ module.exports = (function() {
         if (!_.isEmpty(keyMap))
           mapKeys(formObj);
 
-
         _.forOwn(formObj, (v, k) => {
-          resObj.fields[k] = v.value;
+          formObj[k] = v.value;
         });
 
-        return resObj;
+        Object.defineProperty(formObj, 'invalidFields', {
+          get() {
+            return validationObj.invalidFields;
+          }
+        });
+        Object.defineProperty(formObj, 'validFields', {
+          get() {
+            return validationObj.validFields;
+          }
+        });
+        Object.defineProperty(formObj, 'isValid', {
+          get() {
+            return validationObj.isValid;
+          }
+        });
+
+        return formObj;
       }
       serialize() {
         return FinalForm.serialize(this.parse());

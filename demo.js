@@ -26,24 +26,43 @@ form.addEventListener('submit', evt => {
 // configs
 const parser = finalform.create();
 parser.forms(form);
+
 parser.validations({
   email: element => {
     if (element.value.trim().length)
       return true;
   },
+  phone: element => {
+    if (element.value.trim().length)
+      return true;
+  },
   giant: fieldVal => fieldVal > 10
-})
+});
+
 parser.defineField('giant', () => {
   return 11;
-})
+});
 // // post parsers
-const parsedForm = parser.parse({
+window.parseConf = {
   pick: ['email', 'phone', 'giant'],
   map: { phone: 'superPhone' }
-});
-console.log('parsedForm: ', parsedForm);
+};
+
+// const parsedForm = parser.parse();
+// console.log('parsedForm: ', parsedForm);
 window.parser = parser;
 
+
+window.run = function () {
+  const parsedForm = parser.parse(parseConf);
+  if (!parsedForm.isValid) {
+    parsedForm.invalidFields.forEach(f => {
+      if (f.element)
+        f.element.classList.add('error');
+    })
+  }
+  else console.log('form good');
+}
 // {
 //   isValid: true,
 //   invalidFields: [{name: 'x', element: HTMLElement, value: 11}],

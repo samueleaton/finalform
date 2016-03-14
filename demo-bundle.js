@@ -77,25 +77,40 @@
 	// configs
 	var parser = _finalform2.default.create();
 	parser.forms(form);
+
 	parser.validations({
 	  email: function email(element) {
+	    if (element.value.trim().length) return true;
+	  },
+	  phone: function phone(element) {
 	    if (element.value.trim().length) return true;
 	  },
 	  giant: function giant(fieldVal) {
 	    return fieldVal > 10;
 	  }
 	});
+
 	parser.defineField('giant', function () {
 	  return 11;
 	});
 	// // post parsers
-	var parsedForm = parser.parse({
+	window.parseConf = {
 	  pick: ['email', 'phone', 'giant'],
 	  map: { phone: 'superPhone' }
-	});
-	console.log('parsedForm: ', parsedForm);
+	};
+
+	// const parsedForm = parser.parse();
+	// console.log('parsedForm: ', parsedForm);
 	window.parser = parser;
 
+	window.run = function () {
+	  var parsedForm = parser.parse(parseConf);
+	  if (!parsedForm.isValid) {
+	    parsedForm.invalidFields.forEach(function (f) {
+	      if (f.element) f.element.classList.add('error');
+	    });
+	  } else console.log('form good');
+	};
 	// {
 	//   isValid: true,
 	//   invalidFields: [{name: 'x', element: HTMLElement, value: 11}],
@@ -440,29 +455,39 @@
 	            };
 	          });
 
-	          var resObj = {
+	          var validationObj = {
 	            isValid: true,
 	            invalidFields: [],
-	            validFields: [],
-	            fields: {}
+	            validFields: []
 	          };
 
-	          if (!_lodash2.default.isEmpty(validationsCallbacks)) {
-	            var validationResObj = validateFormObj(formObj);
-	            resObj.isValid = validationResObj.isValid;
-	            resObj.invalidFields = validationResObj.invalidFields;
-	            resObj.validFields = validationResObj.validFields;
-	          }
+	          if (!_lodash2.default.isEmpty(validationsCallbacks)) validationObj = validateFormObj(formObj);
 
 	          if (keysToPick.length) pickKeys(formObj);
 
 	          if (!_lodash2.default.isEmpty(keyMap)) mapKeys(formObj);
 
 	          _lodash2.default.forOwn(formObj, function (v, k) {
-	            resObj.fields[k] = v.value;
+	            formObj[k] = v.value;
 	          });
 
-	          return resObj;
+	          Object.defineProperty(formObj, 'invalidFields', {
+	            get: function get() {
+	              return validationObj.invalidFields;
+	            }
+	          });
+	          Object.defineProperty(formObj, 'validFields', {
+	            get: function get() {
+	              return validationObj.validFields;
+	            }
+	          });
+	          Object.defineProperty(formObj, 'isValid', {
+	            get: function get() {
+	              return validationObj.isValid;
+	            }
+	          });
+
+	          return formObj;
 	        }
 	      }, {
 	        key: 'serialize',
