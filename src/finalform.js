@@ -229,13 +229,21 @@ module.exports = (function() {
       const invalidFields = [];
 
       _.forOwn(validationsCallbacks, (cb, k) => {
-        if (!_.has(formObj, k))
-          return console.error('FinalForm Error: cannot validate "' + k + '". Not found.');
-        const isValid = cb(formObj[k].element || formObj[k].value);
+        let objKey;
+        if (_.has(formObj, k))
+          objKey = k;
+        else if (_.has(formObj, mappedKeysAndValues[k]))
+          objKey = mappedKeysAndValues[k];
+
+        if (!_.has(formObj, objKey))
+          return console.error('FinalForm Error: cannot validate "' + objKey + '". Not found.');
+        
+        const isValid = cb(formObj[objKey].element || formObj[objKey].value);
         if (!isValid) {
-          invalidFields.push(formObj[k]);
-          _.remove(validFieldsKeys, key => key === k);
+          invalidFields.push(formObj[objKey]);
+          _.remove(validFieldsKeys, key => key === objKey);
         }
+
       });
       _.each(validFieldsKeys, key => {
         validFields.push(formObj[key]);
@@ -247,8 +255,11 @@ module.exports = (function() {
 
     function mapKeys(formObj) {
       _.forOwn(keyMap, (v, k) => {
+        if (_.has(formObj, v))
+          return console.error('FinalForm Error: cannot map "' + k + '" to "' + v + '". "' + v + '" already exists.');
         if (_.has(formObj, k)) {
           formObj[v] = formObj[k];
+          formObj[v].name = v;
           delete formObj[k];
         }
       });
@@ -258,6 +269,33 @@ module.exports = (function() {
       _.forOwn(formObj, (v, k) => {
         if (!_.includes(keysToPick, k))
           delete formObj[k];
+      });
+    }
+
+    function defineObjectValidationProperties(formObj) {
+      let validationObj = {
+        isValid: true,
+        invalidFields: [],
+        validFields: []
+      };
+
+      if (!_.isEmpty(validationsCallbacks))
+        validationObj = validateFormObj(formObj);
+
+      Object.defineProperty(formObj, 'invalidFields', {
+        get() {
+          return validationObj.invalidFields;
+        }
+      });
+      Object.defineProperty(formObj, 'validFields', {
+        get() {
+          return validationObj.validFields;
+        }
+      });
+      Object.defineProperty(formObj, 'isValid', {
+        get() {
+          return validationObj.isValid;
+        }
       });
     }
 
@@ -308,39 +346,16 @@ module.exports = (function() {
           };
         });
 
-        let validationObj = {
-          isValid: true,
-          invalidFields: [],
-          validFields: []
-        };
-
-        if (!_.isEmpty(validationsCallbacks))
-          validationObj = validateFormObj(formObj);
-
         if (keysToPick.length)
           pickKeys(formObj);
 
         if (!_.isEmpty(keyMap))
           mapKeys(formObj);
 
+        defineObjectValidationProperties(formObj);
+
         _.forOwn(formObj, (v, k) => {
           formObj[k] = v.value;
-        });
-
-        Object.defineProperty(formObj, 'invalidFields', {
-          get() {
-            return validationObj.invalidFields;
-          }
-        });
-        Object.defineProperty(formObj, 'validFields', {
-          get() {
-            return validationObj.validFields;
-          }
-        });
-        Object.defineProperty(formObj, 'isValid', {
-          get() {
-            return validationObj.isValid;
-          }
         });
 
         return formObj;
@@ -352,7 +367,6 @@ module.exports = (function() {
 
     return new CustomFinalForm();
   }
-
 
   return {
     parse(form, options) {

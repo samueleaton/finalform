@@ -221,12 +221,16 @@ module.exports = function () {
       var invalidFields = [];
 
       _lodash2.default.forOwn(validationsCallbacks, function (cb, k) {
-        if (!_lodash2.default.has(formObj, k)) return console.error('FinalForm Error: cannot validate "' + k + '". Not found.');
-        var isValid = cb(formObj[k].element || formObj[k].value);
+        var objKey = undefined;
+        if (_lodash2.default.has(formObj, k)) objKey = k;else if (_lodash2.default.has(formObj, mappedKeysAndValues[k])) objKey = mappedKeysAndValues[k];
+
+        if (!_lodash2.default.has(formObj, objKey)) return console.error('FinalForm Error: cannot validate "' + objKey + '". Not found.');
+
+        var isValid = cb(formObj[objKey].element || formObj[objKey].value);
         if (!isValid) {
-          invalidFields.push(formObj[k]);
+          invalidFields.push(formObj[objKey]);
           _lodash2.default.remove(validFieldsKeys, function (key) {
-            return key === k;
+            return key === objKey;
           });
         }
       });
@@ -240,8 +244,10 @@ module.exports = function () {
 
     function mapKeys(formObj) {
       _lodash2.default.forOwn(keyMap, function (v, k) {
+        if (_lodash2.default.has(formObj, v)) return console.error('FinalForm Error: cannot map "' + k + '" to "' + v + '". "' + v + '" already exists.');
         if (_lodash2.default.has(formObj, k)) {
           formObj[v] = formObj[k];
+          formObj[v].name = v;
           delete formObj[k];
         }
       });
@@ -250,6 +256,32 @@ module.exports = function () {
     function pickKeys(formObj) {
       _lodash2.default.forOwn(formObj, function (v, k) {
         if (!_lodash2.default.includes(keysToPick, k)) delete formObj[k];
+      });
+    }
+
+    function defineObjectValidationProperties(formObj) {
+      var validationObj = {
+        isValid: true,
+        invalidFields: [],
+        validFields: []
+      };
+
+      if (!_lodash2.default.isEmpty(validationsCallbacks)) validationObj = validateFormObj(formObj);
+
+      Object.defineProperty(formObj, 'invalidFields', {
+        get: function get() {
+          return validationObj.invalidFields;
+        }
+      });
+      Object.defineProperty(formObj, 'validFields', {
+        get: function get() {
+          return validationObj.validFields;
+        }
+      });
+      Object.defineProperty(formObj, 'isValid', {
+        get: function get() {
+          return validationObj.isValid;
+        }
       });
     }
 
@@ -312,36 +344,14 @@ module.exports = function () {
             };
           });
 
-          var validationObj = {
-            isValid: true,
-            invalidFields: [],
-            validFields: []
-          };
-
-          if (!_lodash2.default.isEmpty(validationsCallbacks)) validationObj = validateFormObj(formObj);
-
           if (keysToPick.length) pickKeys(formObj);
 
           if (!_lodash2.default.isEmpty(keyMap)) mapKeys(formObj);
 
+          defineObjectValidationProperties(formObj);
+
           _lodash2.default.forOwn(formObj, function (v, k) {
             formObj[k] = v.value;
-          });
-
-          Object.defineProperty(formObj, 'invalidFields', {
-            get: function get() {
-              return validationObj.invalidFields;
-            }
-          });
-          Object.defineProperty(formObj, 'validFields', {
-            get: function get() {
-              return validationObj.validFields;
-            }
-          });
-          Object.defineProperty(formObj, 'isValid', {
-            get: function get() {
-              return validationObj.isValid;
-            }
           });
 
           return formObj;
