@@ -262,8 +262,6 @@ module.exports = (function() {
     }
 
     class CustomFinalForm {
-      constructor() {
-      }
       defineField(name, getter) {
         definedFields.push({ name, getter });
         return this;
