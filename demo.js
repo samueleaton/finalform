@@ -1,15 +1,7 @@
-import finalform from './finalform'
+'use strict';
 
 const form = document.querySelector('#formy');
 
-// console.log('\nfinalform.parse(form)');
-// console.log(finalform.parse(form));
-
-// console.log('\nfinalform.serialize(form)');
-// console.log(finalform.serialize(form));
-
-window.finalform = finalform;
-window.form = form;
 window.externalTa = document.querySelector('#external-ta')
 
 form.addEventListener('submit', evt => {
@@ -48,10 +40,6 @@ window.parseConf = {
   map: { phone: 'superPhone' }
 };
 
-// const parsedForm = parser.parse();
-// console.log('parsedForm: ', parsedForm);
-window.parser = parser;
-
 
 window.run = function () {
   const parsedForm = parser.parse(parseConf);
@@ -63,9 +51,3 @@ window.run = function () {
   }
   else console.log('form good');
 }
-// {
-//   isValid: true,
-//   invalidFields: [{name: 'x', element: HTMLElement, value: 11}],
-//   validFields: [],
-//   fields: {}
-// }
