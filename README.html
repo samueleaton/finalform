@@ -1075,6 +1075,14 @@ const formObj = finalform.parse(form, {
 customParser.forms(myForm1, myForm2);
 </code></pre>
 
+<h4 id="adding-custom-fields-to-the-parser"><a name="user-content-adding-custom-fields-to-the-parser" href="#adding-custom-fields-to-the-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Adding Custom Fields to the Parser</h4>
+<p>You can attach custom fields to the parser. This allows you to pull in additional data that is not associated with any form. Use the <code>defineField(fieldName, getter)</code> method.</p>
+<pre><code class="javascript">const customParser = finalform.create();
+customParser.defineField('my-timestamp', () =&gt; {
+  return Date.now();
+});
+</code></pre>
+
 <h4 id="running-the-custom-parser"><a name="user-content-running-the-custom-parser" href="#running-the-custom-parser" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Running the Custom Parser</h4>
 <p>Run the Custom Parser with the <code>parse</code> method.</p>
 <pre><code class="javascript">const customParser = finalform.create();
@@ -1096,6 +1104,7 @@ customParser.parse({
 });
 </code></pre>
 
+<p><em>Note:</em> If using in combination with <code>map</code>, you can use the field name before or after is was mapped. <code>pick</code> will remember both field names. </p>
 <p><strong>Changing Key Names of the Parsed Result</strong></p>
 <p>You can define the <code>map</code> property to change the name of the key for the field.</p>
 <pre><code class="javascript">const customParser = finalform.create();

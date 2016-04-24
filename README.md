@@ -84,6 +84,18 @@ const customParser = finalform.create();
 customParser.forms(myForm1, myForm2);
 ```
 
+#### Adding Custom Fields to the Parser
+
+You can attach custom fields to the parser. This allows you to pull in additional data that is not associated with any form. Use the `defineField(fieldName, getter)` method.
+
+``` javascript
+const customParser = finalform.create();
+customParser.defineField('my-timestamp', () => {
+  return Date.now();
+});
+```
+
+
 #### Running the Custom Parser
 
 Run the Custom Parser with the `parse` method.
@@ -110,6 +122,8 @@ customParser.parse({
   pick: ['email', 'phone']
 });
 ```
+
+*Note:* If using in combination with `map`, you can use the field name before or after is was mapped. `pick` will remember both field names. 
 
 **Changing Key Names of the Parsed Result**
 
