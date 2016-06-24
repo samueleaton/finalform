@@ -4,8 +4,8 @@
   "description": "HTML form fields parser",
   "main": "finalform.js",
   "scripts": {
-    "lint": "eslint -c ./.eslintrc src/finalform.js",
-    "transpile": "babel src/finalform.js > finalform.js",
+    "lint": "eslint -c .eslintrc.json src/**/*.js",
+    "transpile": "babel src -d dist",
     "bundle": "webpack",
     "build": "npm run -s lint && npm run transpile && npm run bundle",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +23,7 @@
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.2",
+    "babel-eslint": "^6.1.0",
     "babel-loader": "^6.2.3",
     "babel-preset-es2015": "^6.5.0",
     "eslint": "^2.1.0",

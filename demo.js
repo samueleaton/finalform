@@ -2,7 +2,7 @@
 
 const form = document.querySelector('#formy');
 
-window.externalTa = document.querySelector('#external-ta')
+window.externalTextArea = document.querySelector('#external-ta')
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
@@ -24,7 +24,7 @@ parser.validations({
     if (element.value.trim().length)
       return true;
   },
-  phone: element => {
+  superPhone: element => {
     if (element.value.trim().length)
       return true;
   },
@@ -37,7 +37,8 @@ parser.defineField('giant', () => {
 // // post parsers
 window.parseConf = {
   pick: ['email', 'phone', 'giant'],
-  map: { phone: 'superPhone' }
+  map: { phone: 'superPhone' },
+  escape: true
 };
 
 
@@ -48,6 +49,12 @@ window.run = function () {
       if (f.element)
         f.element.classList.add('error');
     })
+    console.log('Look at the form errors.');
   }
   else console.log('form good');
+
+  return parsedForm;
 }
+
+console.info('access the form using the variable `form`');
+console.info('type `run()` in the console to see the custom parser go');
