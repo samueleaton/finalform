@@ -1,58 +1,64 @@
+<br />  
+<br />  
+<p align="center">
+<img width="250" title="finalform" alt="finalform" src="https://raw.githubusercontent.com/samueleaton/design/master/finalform2.png">  
+</p>
+<br />  
+<br />  
+
 # FinalForm
 
 HTML form fields parser
 
 <img src="https://img.shields.io/badge/license-MIT-blue.svg">
 
+## Installation
+
+Using npm:
+
+```
+npm i -S finalform
+```
+
 ## Usage
 
 There are two ways to use FinalForm:
 
-1) A static form parser
-2) A custom form parser
+1) A quick form parser  
+2) A more advanced custom form parser
 
-### Static Form Parser
+### Quick Form Parser
 
-Simply pass a form object into one of two methods:
+Simply pass a form element into the `parseForm` method. 
 
-- `parse`
-- `serialize`
+``` javascript
+finalform.parseForm(HTMLElement[, {/* values options */}]);
+```
 
-**Parse Example**
+**Example**
 
 ``` javascript
 import finalform from 'finalform';
 
 const form = document.querySelector('#myForm');
-const formObj = finalform.parse(form);
+const formObj = finalform.parseForm(form);
 ```
 
-**Serialize Example**
+#### Values Config
 
-``` javascript
-import finalform from 'finalform';
-
-const form = document.querySelector('#myForm');
-const serializedForm = finalform.serialize(form);
-```
-
-See better example in `demo.html` and `demo.js`.
-
-
-#### Passing Options
-
-Pass an object of options as the second parameter to the `parse` or `serialize`methods. The options **only** effect `<input>` elements (meaning they don't modify values for `<select>`, `<textarea>`, etc...).
-
-All options take boolean values `{trim: false, compress: true}`
+Pass an object of options as the second parameter to modify the values.
 
 Available Options:
 
-- **`trim`** - removes all spaces from beginning and end of string (defaults to `true`)
-- **`compress`** - compress multiple sequential blank spaces to a single space (defaults to `true`)
-- **`checkboxesAsArray`** - store check boxes as an array of selected boxes rather than an object of `true`/`false` value. (defaults to `false`)
-- **`toUpperCase`** - convert values to uppercase (defaults to `false`)
-- **`toLowerCase`** - convert values to lowercase (defaults to `false`)
-- **`modify`** - a `false` value turns all other options to `false` (defaults to `true`)
+| Option         | Type          | Description                    | Default Value |
+| -------------- | ------------- | ------------------------------ | ------------- |
+|`trim`|Boolean|removes spaces from beginning/end of string|`true`|
+|`compress`|Boolean|compress multiple sequential blank spaces to a single space|`true`|
+|`escape`|Boolean|Converts certain characters to corresponding HTML entities|`false`|
+|`toUpperCase`|Boolean|convert values to uppercase|`false`|
+|`toLowerCase`|Boolean|convert values to lowercase|`false`|
+|`checkboxFormat`|String (`'object'`, `'array'`)|whether checkbox result should be an object of `true`, `false` or an array of just the true values|`'object'`|
+|`map`|Function <br />`@param inputValue`<br />`@return newValue`| map all of the parsed values to new value|`null`|
 
 Example
 
@@ -60,8 +66,13 @@ Example
 import finalform from 'finalform';
 
 const form = document.querySelector('#myForm');
-const formObj = finalform.parse(form, {
-    trim: false, compress: false, toUpperCase: true
+const formObj = finalform.parseForm(form, {
+    trim: false,
+    compress: false,
+    escape: true,
+    toUpperCase: true,
+    checkboxFormat: 'object'
+    map: (value) => value // do something to value
 });
 ```
 
@@ -69,86 +80,198 @@ const formObj = finalform.parse(form, {
 
 #### Creating a Custom Parser
 
-Create a custom parser using the `create` method.
+Create a custom parser using the `createParser` method.
 
 ``` javascript
-const customParser = finalform.create();
+const customParser = finalform.createParser({ /* parser options */ });
 ```
 
-#### Adding Forms to Custom Parser
-
-You can add as many forms as you want to the custom parser using the `forms` method, it will parse them all at one.
+#### Running the Parser
 
 ``` javascript
-const customParser = finalform.create();
-customParser.forms(myForm1, myForm2);
-```
-
-#### Adding Custom Fields to the Parser
-
-You can attach custom fields to the parser. This allows you to pull in additional data that is not associated with any form. Use the `defineField(fieldName, getter)` method.
-
-``` javascript
-const customParser = finalform.create();
-customParser.defineField('my-timestamp', () => {
-  return Date.now();
-});
-```
-
-
-#### Running the Custom Parser
-
-Run the Custom Parser with the `parse` method.
-
-``` javascript
-const customParser = finalform.create();
+const customParser = finalform.createParser({ /* parser options */ });
 customParser.parse();
 ```
 
-The format of the parser is an `Object` with the following properties:
+#### Custom Parser Options
 
-- fields - an object of all of the parsed fields and their values
-- isValid - is `true` if there are no invalid fields, otherwise is false
-- invalidFields - array of invalid fields (see `validations` method below)
-- validFields - array of valid fields (see `validations` method below)
+There are a handful of options to specify in the custom parser. Here is an example of all of the available properties (a description of each is given after the example):  
 
-**Filtering the Parsed Result**
+| Option         | Type          | Description                    | Default Value |
+| -------------- | ------------- | ------------------------------ | ------------- |
+|`forms`|Array|array of HTML elements to parse|`[]`|
+|`mapNames`|Object|map the html element names to new name|`{}`|
+|`pick`|Array|filter fields in parsed output|`{}`|
+|`customFields`|Object|define custom fields that may not be derived from any HTML element|`{}`|
+|`validations`|Object|synchronous validations to run on specified fields|`{}`|
+|`asyncValidations`|Object|asynchronous validations to run on specified fields|`{}`|
+|`values`|Object|(See `Values Config` section)|
 
-You can define the `pick` property (inspired by lodash) to choose which field to return from the parser.
-
-``` javascript
-const customParser = finalform.create();
-customParser.parse({
-  pick: ['email', 'phone']
-});
-```
-
-*Note:* If using in combination with `map`, you can use the field name before or after is was mapped. `pick` will remember both field names. 
-
-**Changing Key Names of the Parsed Result**
-
-You can define the `map` property to change the name of the key for the field.
 
 ``` javascript
-const customParser = finalform.create();
-customParser.parse({
-  map: {email: 'user-email', phone: 'home-phone-number']
-});
-```
-
-### Custom Field Validations
-
-To set custom validations, use the `validations` method before `parse`. Pass an object of key value pairs where the value is a function whose first paramter is the html form element where the field gets it value from.
-
-``` javascript
-parser.validations({
-  email: element => {
-    if (element.value.trim().length)
-      return true;
-  },
-  phone: element => {
-    if (element.value.trim().length)
-      return true;
+{
+  forms: [],
+  mapNames: {},
+  pick: [],
+  customFields: {},
+  validations: {},
+  asyncValidations: {},
+  values: {
+    trim: Boolean,
+    compress: Boolean,
+    escape: Boolean,
+    toUpperCase: Boolean,
+    toLowerCase: Boolean,
+    checkboxFormat: String,
+    map: Function,
   }
+}
+```
+
+
+##### Adding Forms to Custom Parser
+
+You can add as many forms as you want to the custom parser using the `forms` array, it will parse them all at one.
+
+``` javascript
+const customParser = finalform.createParser({ forms: [HTMLElement, /*etc*/] });
+parser.parse();
+```
+
+##### Changing Field Names in the Output
+
+If you want to take the output of the parser and plug it into another API, you will probably want to change the name of some of the fields.
+
+``` html
+<input type="text" name="user-email" value="ironman@stark.com" />
+<input type="text" name="user-company" value="Stark Industries" />
+```
+
+``` javascript
+const customParser = finalform.createParser({
+  /*other options...*/
+  mapNames: {
+    'user-email': 'Email',
+    'user-company': 'Company'
+  }
+});
+const parsedForm = parser.parse();
+
+console.log(parsedForm.Email); // ironman@stark.com
+console.log(parsedForm.Company); // Stark Industries
+```
+
+##### Picking Specified Fields
+
+If you want to take the output of the parser and plug it into another API, you will probably want to only pick a few fields from the output.
+
+(This feature is based off of Lodash's [pick](https://lodash.com/docs#pick))
+
+``` html
+<input type="text" name="email" value="ironman@stark.com" />
+<input type="text" name="company" value="Stark Industries" />
+```
+
+``` javascript
+const customParser = finalform.createParser({
+  /*other options...*/
+  pick: ['email']
+});
+const parsedForm = parser.parse();
+
+console.log(parsedForm.email); // ironman@stark.com
+console.log(parsedForm.company); // undefined
+```
+
+##### Adding Custom Fields to the Parser
+
+You can attach custom fields to the parser. This allows you to pull in additional data that may not be associated with any form.
+
+``` html
+<input type="text" name="email" value="ironman@stark.com" />
+<input type="text" name="company" value="Stark Industries" />
+```
+
+``` javascript
+const customParser = finalform.createParser({
+  /* other options... */
+  customFields: {
+    location: () => {
+      // do some calculations
+      return 'Manhattan';
+    }
+  }
+});
+const parsedForm = parser.parse();
+
+console.log(parsedForm.email); // ironman@stark.com
+console.log(parsedForm.location); // Manhattan
+```
+
+##### Syncronous Validations
+
+You can specify validations to run against all of the values and return whether it is valid or not.
+
+You can return a boolean or an object with the format `{ isValid: Boolean, msg: String }` for easy error messages.
+
+``` html
+<input type="text" name="email" value="" />
+<input type="text" name="company" value="Stark Industries" />
+```
+
+``` javascript
+const customParser = finalform.createParser({
+  /* other options... */
+  validations: {
+    email: value => {
+      if (email.trim().length)
+        return true;
+      else
+        return { isValid: false, msg: 'Field is required' }
+    }
+  }
+});
+const parsedForm = parser.parse();
+
+console.log(parsedForm.email); // ''
+console.log(parsedForm.isValid); // false
+console.log(parsedForm.invalidFields); // [ Object ]
+```
+
+##### Asyncronous Validations
+
+Asynchronous validations are good if you need to hit up a server before validating some fields.
+
+You can return a boolean or an object with the format `{ isValid: Boolean, msg: String }` for easy error messages.
+
+*When using asynchronous validations the `parse` method will return a promise.*
+
+``` html
+<input type="text" name="email" value="ironman@stark.com" />
+<input type="text" name="company" value="Stark Industries" />
+```
+
+``` javascript
+const customParser = finalform.createParser({
+  /* other options... */
+  asyncValidations: {
+    email: (value, done) => {
+      // query the server to see if email is taken
+      // ...
+      const emailAvailable = isEmailAvailable(value); 
+      // ...
+
+      if (emailAvailable)
+        return done(true);
+      else
+        return done({ isValid: false, msg: 'Email already used' });
+    }
+  }
+});
+
+parser.parse().then(parsedForm => {
+  console.log(parsedForm.email); // ironman@stark.com
+  console.log(parsedForm.isValid); // false
+  console.log(parsedForm.invalidFields); // [ Object ]
 });
 ```

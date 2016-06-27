@@ -21,6 +21,10 @@
     padding :4px;
     color:rgb(0,160,100);
   }
+  input[type=text] {
+    border: 1px solid rgb(130,130,130);
+    outline:none;
+  }
   input.error {
     outline:1px solid red;
   }
@@ -44,23 +48,23 @@
 
     <h3>No "name" attribute but with "id"</h3>
     <!-- input with no name but id -->
-    <input id="person" placeholder="person">
+    <input type="text" id="person" placeholder="person">
 
     <h3>No "name" or "id" attributes but with "placeholder"</h3>
     <!-- input with no name or id, but with placeholder -->
-    <input placeholder="company">
+    <input type="text" placeholder="company">
 
     <h3>No "name", "id" or "placeholder" attributes</h3>
     <!-- input with no name, id, or placeholder -->
-    <input>
+    <input type="text">
 
     <h3>No "name", "id" or "placeholder" attributes</h3>
     <!-- input with no name, id, or placeholder -->
-    <input>
+    <input type="text">
 
     <h3>No "name", "id" or "placeholder" attributes</h3>
     <!-- input with no name, id, or placeholder -->
-    <input>
+    <input type="text">
 
     <br><br>
 
@@ -125,7 +129,7 @@
 
   <br><br>
 
-  <textarea id="external-ta" style="width:300px;height:200px;">This is a text area that is not part of the form but that I want to merge into the parsed form object. You can refrence me in JS as "externalTa"</textarea>
+  <textarea id="external-ta" style="width:300px;height:200px;">This is a text area that is not part of the form but that I want to merge into the parsed form object. You can refrence me in JS as "externalTextArea"</textarea>
 
   <br><br>
 
@@ -133,7 +137,7 @@
 
   <br><br>
 
-  Example <code>finalform.merge( finalform.parse(form), {externalTa: externalTa.value} );</code>
+  Example <code>finalform.merge( finalform.parse(form), {externalTa: externalTextArea.value} );</code>
 
 
   <br>
