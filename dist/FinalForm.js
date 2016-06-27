@@ -78,7 +78,6 @@ var FinalForm = function () {
   _createClass(FinalForm, [{
     key: 'getInputs',
     value: function getInputs() {
-      console.log('checkpt 1');
       var inputsObj = {};
       var elementMap = {};
 
@@ -108,7 +107,6 @@ var FinalForm = function () {
   }, {
     key: 'getSelects',
     value: function getSelects() {
-      console.log('checkpt 2');
       var elementMap = {};
 
       _lodash2.default.each(this.form.getElementsByTagName('select'), function (element, i) {
@@ -128,7 +126,6 @@ var FinalForm = function () {
   }, {
     key: 'getTextAreas',
     value: function getTextAreas() {
-      console.log('checkpt 3');
       var elementMap = {};
       _lodash2.default.each(this.form.getElementsByTagName('textarea'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
@@ -145,7 +142,6 @@ var FinalForm = function () {
   }, {
     key: 'getButtons',
     value: function getButtons() {
-      console.log('checkpt 4');
       var elementMap = {};
       _lodash2.default.each(this.form.getElementsByTagName('button'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');

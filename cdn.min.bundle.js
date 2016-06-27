@@ -92,11 +92,10 @@
 	}
 
 	function parseForm(form) {
-	  var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	  var valuesConfig = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	  if (!_lodash2.default.isPlainObject(config)) throw new Error('parser config must be a plain object');
-	  config.forms = [form];
-	  return createCustomParser(config).parse();
+	  if (!_lodash2.default.isPlainObject(valuesConfig)) throw new Error('parser config must be a plain object');
+	  return createCustomParser({ forms: [form], values: valuesConfig }).parse();
 	}
 
 	function serializeForm(form) {
@@ -16618,7 +16617,6 @@
 	  _createClass(FinalForm, [{
 	    key: 'getInputs',
 	    value: function getInputs() {
-	      console.log('checkpt 1');
 	      var inputsObj = {};
 	      var elementMap = {};
 
@@ -16648,7 +16646,6 @@
 	  }, {
 	    key: 'getSelects',
 	    value: function getSelects() {
-	      console.log('checkpt 2');
 	      var elementMap = {};
 
 	      _lodash2.default.each(this.form.getElementsByTagName('select'), function (element, i) {
@@ -16668,7 +16665,6 @@
 	  }, {
 	    key: 'getTextAreas',
 	    value: function getTextAreas() {
-	      console.log('checkpt 3');
 	      var elementMap = {};
 	      _lodash2.default.each(this.form.getElementsByTagName('textarea'), function (element, i) {
 	        var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
@@ -16685,7 +16681,6 @@
 	  }, {
 	    key: 'getButtons',
 	    value: function getButtons() {
-	      console.log('checkpt 4');
 	      var elementMap = {};
 	      _lodash2.default.each(this.form.getElementsByTagName('button'), function (element, i) {
 	        var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');
@@ -16940,15 +16935,15 @@
 	      if (!_lodash2.default.has(formObj, objKey)) {
 	        return console.warn('FinalForm: cannot validate "' + objKey + '". Field Not found.');
 	      }
-	      var asyncFunc = function asyncFunc(done) {
+
+	      asyncValidationsArray.push(function (done) {
 	        function onDone(userResponse) {
 	          var asyncResponse = {};
 	          asyncResponse[fieldName] = userResponse;
 	          done(asyncResponse);
 	        };
 	        validationCb(formObj[objKey].value, onDone);
-	      };
-	      asyncValidationsArray.push(asyncFunc);
+	      });
 	    });
 
 	    (0, _sparallel2.default)(asyncValidationsArray).then(function (userResponses) {

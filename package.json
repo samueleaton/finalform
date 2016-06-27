@@ -1,8 +1,8 @@
 {
   "name": "finalform",
-  "version": "0.0.12",
+  "version": "1.0.0",
   "description": "HTML form fields parser",
-  "main": "finalform.js",
+  "main": "dist/index.js",
   "scripts": {
     "lint": "eslint -c .eslintrc.json --max-warnings 10 src/**/*.js",
     "pretranspile": "npm run -s lint",

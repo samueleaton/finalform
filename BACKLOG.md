@@ -2,12 +2,17 @@
 
 Checklist for getting to v1.0.0:
 
-- [ ] Add tests
-- [ ] stabilize feature set
-- [ ] stabilize/normalize api
+- [x] stabilize feature set
+- [x] stabilize/normalize api
 - [x] add asynchronous parse/validation
 - [x] add ability to return error message in validation
-- [ ] make validation for non-text fields standardized
+- [x] make validation for non-text fields standardized
 - [x] remove form element restriction
-- [ ] ~~make error validation not throw error if field is not found (consider a strict mode?)~~
+
+Checklist for getting to v1.1.0:
+
+- [ ] Add tests
+- [ ] add `asyncCustomFields` api
+- [ ] add `validationInputs` api
 - [ ] add lots of comments
+- [ ] add APIs for setting config values after creating parser
