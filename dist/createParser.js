@@ -258,12 +258,12 @@ module.exports = function createParser(config) {
 
     if (_lodash2.default.isUndefined(value)) throw new _FinalFormError2.default('input value cannot be undefined');else if (_lodash2.default.isUndefined(type)) throw new _FinalFormError2.default('input type cannot be undefined');
 
-    if (_lodash2.default.isPlainObject(value)) return cleanObject({ value: value, type: type });else if (_lodash2.default.isArray(value)) return cleanArray({ value: value, type: type });else if (_lodash2.default.isString(value)) return cleanText({ value: value, type: type });
+    if (_lodash2.default.isPlainObject(value)) return cleanObject({ value: value, type: type });else if (_lodash2.default.isArray(value)) return cleanArray({ value: value, type: type });else if (_lodash2.default.isString(value)) return cleanText({ value: value, type: type });else return value;
   }
 
   function cleanValues(formObj) {
     _lodash2.default.forOwn(formObj, function (val, key) {
-      formObj[key] = cleanInput(val);
+      if (val.type === 'custom') formObj[key] = val.value;else formObj[key] = cleanInput(val);
     });
     return formObj;
   }

@@ -290,11 +290,16 @@ module.exports = function createParser(config) {
       return cleanArray({ value, type });
     else if (_.isString(value))
       return cleanText({ value, type });
+    else
+      return value;
   }
 
   function cleanValues(formObj) {
     _.forOwn(formObj, (val, key) => {
-      formObj[key] = cleanInput(val);
+      if (val.type === 'custom')
+        formObj[key] = val.value;
+      else
+        formObj[key] = cleanInput(val);
     });
     return formObj;
   }

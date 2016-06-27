@@ -16,3 +16,4 @@ Checklist for getting to v1.1.0:
 - [ ] add `validationInputs` api
 - [ ] add lots of comments
 - [ ] add APIs for setting config values after creating parser
+- [ ] extract only used lodash methods to make bundle smaller

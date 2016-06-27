@@ -13,15 +13,15 @@ module.exports = {
             { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
         ]
     }
-    // ,plugins: [
-    //   new webpack.optimize.UglifyJsPlugin({
-    //     minimize: true,
-    //     mangle: {
-    //       except: ['exports', 'require']
-    //     },
-    //     compress: {
-    //       warnings: false
-    //     }
-    //   })
-    // ]
+    ,plugins: [
+      new webpack.optimize.UglifyJsPlugin({
+        minimize: true,
+        mangle: {
+          except: ['exports', 'require']
+        },
+        compress: {
+          warnings: false
+        }
+      })
+    ]
 };
