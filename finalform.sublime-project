@@ -1,0 +1,18 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+  "SublimeLinter": 
+  {
+    "linters": 
+    {
+      "eslint": 
+      {
+        "args": "-c '${project}/.eslintrc.json'"
+      }
+    }
+  }
+}

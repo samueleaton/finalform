@@ -22,16 +22,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var FinalForm = function () {
   _createClass(FinalForm, null, [{
-    key: 'validateFormElement',
-    value: function validateFormElement(form) {
-      if (form && (!(form instanceof HTMLElement) || form.tagName && form.tagName.toUpperCase() !== 'FORM')) throw new Error('Not a valid HMTL form element.');
-    }
+    key: 'generateKeyName',
+
     /* generates a key for the field value
       only runs if no 'name', 'id', and 'placeholder' attributes are found
     */
-
-  }, {
-    key: 'generateKeyName',
     value: function generateKeyName(inputsObj, element, type, index) {
       var i = index || 1;
       var typeStr = typeof type === 'string' ? '-' + type : '';
@@ -70,17 +65,10 @@ var FinalForm = function () {
 
   }]);
 
-  function FinalForm(form, options) {
+  function FinalForm(form) {
     _classCallCheck(this, FinalForm);
 
-    this.options = options || {};
     this.form = form;
-
-    if (this.options.modify === false) {
-      this.options.trim = this.options.compress = this.options.toUpperCase = this.options.toLowerCase = this.options.checkboxesAsArray = false;
-    }
-
-    FinalForm.validateFormElement(this.form);
   }
 
   /* Gets all form <input> values
@@ -90,8 +78,7 @@ var FinalForm = function () {
   _createClass(FinalForm, [{
     key: 'getInputs',
     value: function getInputs() {
-      var _this = this;
-
+      console.log('checkpt 1');
       var inputsObj = {};
       var elementMap = {};
 
@@ -100,71 +87,82 @@ var FinalForm = function () {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(inputsObj, 'input', type);
         var val = element.value;
 
-        if (_this.options.trim !== false) val = val.trim();
-
-        if (_this.options.compress !== false) val = val.replace(/ +/g, ' ');
-
-        if (_this.options.toUpperCase === true) val = val.toUpperCase();
-
-        if (_this.options.toLowerCase === true) val = val.toLowerCase();
-
-        if (_this.options.escape === true) val = _lodash2.default.escape(val);
-
         if (type === 'checkbox') {
-          if (_this.options.checkboxesAsArray) {
-            if (!_lodash2.default.isArray(inputsObj[name])) inputsObj[name] = [];
-            if (element.checked) inputsObj[name].push(val);
-          } else {
-            if (_typeof(inputsObj[name]) !== 'object') inputsObj[name] = {};
-            inputsObj[name][val] = element.checked;
-          }
+          if (_typeof(inputsObj[name]) !== 'object') inputsObj[name] = {};
+          inputsObj[name][val] = element.checked;
         } else if (type === 'radio') {
           if (typeof inputsObj[name] === 'undefined') inputsObj[name] = '';
           if (element.checked) inputsObj[name] = val;
         } else inputsObj[name] = val;
 
-        elementMap[name] = { name: name, element: element, value: inputsObj[name] };
+        elementMap[name] = {
+          name: name,
+          element: element,
+          value: inputsObj[name],
+          type: type,
+          msg: null
+        };
       });
       return elementMap;
     }
   }, {
     key: 'getSelects',
-    value: function getSelects(parent) {
+    value: function getSelects() {
+      console.log('checkpt 2');
       var elementMap = {};
 
-      _lodash2.default.each(parent.getElementsByTagName('select'), function (element, i) {
+      _lodash2.default.each(this.form.getElementsByTagName('select'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'select');
 
-        elementMap[name] = { name: name, element: element, value: element.value };
+        elementMap[name] = {
+          name: name,
+          element: element,
+          value: element.value,
+          type: 'select',
+          msg: null
+        };
       });
 
       return elementMap;
     }
   }, {
     key: 'getTextAreas',
-    value: function getTextAreas(parent) {
+    value: function getTextAreas() {
+      console.log('checkpt 3');
       var elementMap = {};
-      _lodash2.default.each(parent.getElementsByTagName('textarea'), function (element, i) {
+      _lodash2.default.each(this.form.getElementsByTagName('textarea'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
-        elementMap[name] = { name: name, element: element, value: element.value };
+        elementMap[name] = {
+          name: name,
+          element: element,
+          value: element.value,
+          type: 'textarea',
+          msg: null
+        };
       });
       return elementMap;
     }
   }, {
     key: 'getButtons',
-    value: function getButtons(parent) {
+    value: function getButtons() {
+      console.log('checkpt 4');
       var elementMap = {};
-      _lodash2.default.each(parent.getElementsByTagName('button'), function (element, i) {
+      _lodash2.default.each(this.form.getElementsByTagName('button'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');
-        elementMap[name] = { name: name, element: element, value: element.value };
+        elementMap[name] = {
+          name: name,
+          element: element,
+          value: element.value,
+          type: element.type || null,
+          msg: null
+        };
       });
       return elementMap;
     }
   }, {
     key: 'parse',
     value: function parse() {
-      var args = [this.form, this.options];
-      return (0, _merge2.default)(this.getInputs.apply(this, args), this.getTextAreas.apply(this, args), this.getSelects.apply(this, args), this.getButtons.apply(this, args));
+      return (0, _merge2.default)(this.getInputs(), this.getTextAreas(), this.getSelects(), this.getButtons());
     }
   }]);
 

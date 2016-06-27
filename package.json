@@ -4,7 +4,8 @@
   "description": "HTML form fields parser",
   "main": "finalform.js",
   "scripts": {
-    "lint": "eslint -c .eslintrc.json src/**/*.js",
+    "lint": "eslint -c .eslintrc.json --max-warnings 10 src/**/*.js",
+    "pretranspile": "npm run -s lint",
     "transpile": "babel src -d dist",
     "bundle": "webpack",
     "build": "npm run -s lint && npm run transpile && npm run bundle",
@@ -27,6 +28,7 @@
     "babel-loader": "^6.2.3",
     "babel-preset-es2015": "^6.5.0",
     "eslint": "^2.1.0",
+    "jasmine": "^2.4.1",
     "webpack": "^1.12.13"
   },
   "repository": {
@@ -34,6 +36,7 @@
     "url": "https://github.com/samueleaton/finalform"
   },
   "dependencies": {
-    "lodash": "^4.6.1"
+    "lodash": "^4.6.1",
+    "sparallel": "^1.0.0"
   }
 }

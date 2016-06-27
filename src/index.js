@@ -6,28 +6,23 @@
 
 import _ from 'lodash';
 import FinalForm from './FinalForm';
-import createCustomParser from './createCustomParser';
+import createParser from './createParser';
 import merge from './merge';
 
-module.exports = (function() {
-  return {
-    merge: merge,
-    parse(form, options) {
-      const finalForm = new FinalForm(form, options);
-      const parsedObj = finalForm.parse();
-      _.forOwn(parsedObj, (val, key) => {
-        parsedObj[key] = val.value;
-      });
-      return parsedObj;
-    },
-    serialize(form, options) {
-      return FinalForm.serialize(this.parse(form, options));
-    },
-    create(...forms) {
-      const customParser = createCustomParser();
-      if (forms.length)
-        customParser.forms(...forms);
-      return customParser;
-    }
-  };
-})();
+function createCustomParser(parserConfig = {}) {
+  if (!_.isPlainObject(parserConfig))
+    throw new Error('parser config must be a plain object');
+  return createParser(parserConfig);
+}
+
+function parseForm(form, valuesConfig = {}) {
+  if (!_.isPlainObject(valuesConfig))
+    throw new Error('parser config must be a plain object');
+  return createCustomParser({ forms: [ form ], values: valuesConfig }).parse();
+}
+
+function serializeForm(form, config = {}) {
+  return FinalForm.serialize(parseForm(form, config));
+}
+
+module.exports = { merge, parseForm, serializeForm, createParser: createCustomParser };

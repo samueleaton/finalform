@@ -2,16 +2,6 @@ import _ from 'lodash';
 import merge from './merge';
 
 export default class FinalForm {
-  static validateFormElement(form) {
-    if (
-      form && (
-        !(form instanceof HTMLElement) ||
-        form.tagName &&
-        form.tagName.toUpperCase() !== 'FORM'
-      )
-    )
-      throw new Error('Not a valid HMTL form element.');
-  }
   /* generates a key for the field value
     only runs if no 'name', 'id', and 'placeholder' attributes are found
   */
@@ -65,25 +55,14 @@ export default class FinalForm {
 
   /*
   */
-  constructor(form, options) {
-    this.options = options || {};
+  constructor(form) {
     this.form = form;
-
-    if (this.options.modify === false) {
-      this.options.trim =
-      this.options.compress =
-      this.options.toUpperCase =
-      this.options.toLowerCase =
-      this.options.checkboxesAsArray =
-      false;
-    }
-
-    FinalForm.validateFormElement(this.form);
   }
 
   /* Gets all form <input> values
   */
   getInputs() {
+    console.log('checkpt 1');
     const inputsObj = {};
     const elementMap = {};
 
@@ -92,35 +71,12 @@ export default class FinalForm {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         inputsObj, 'input', type
       );
-      let val = element.value;
-
-      if (this.options.trim !== false)
-        val = val.trim();
-
-      if (this.options.compress !== false)
-        val = val.replace(/ +/g, ' ');
-
-      if (this.options.toUpperCase === true)
-        val = val.toUpperCase();
-
-      if (this.options.toLowerCase === true)
-        val = val.toLowerCase();
-
-      if (this.options.escape === true)
-        val = _.escape(val);
+      const val = element.value;
 
       if (type === 'checkbox') {
-        if (this.options.checkboxesAsArray) {
-          if (!_.isArray(inputsObj[name]))
-            inputsObj[name] = [];
-          if (element.checked)
-            inputsObj[name].push(val);
-        }
-        else {
-          if (typeof inputsObj[name] !== 'object')
-            inputsObj[name] = {};
-          inputsObj[name][val] = element.checked;
-        }
+        if (typeof inputsObj[name] !== 'object')
+          inputsObj[name] = {};
+        inputsObj[name][val] = element.checked;
       }
       else if (type === 'radio') {
         if (typeof inputsObj[name] === 'undefined')
@@ -131,54 +87,80 @@ export default class FinalForm {
       else
         inputsObj[name] = val;
 
-      elementMap[name] = { name, element, value: inputsObj[name] };
+      elementMap[name] = {
+        name: name,
+        element: element,
+        value: inputsObj[name],
+        type: type,
+        msg: null
+      };
     });
     return elementMap;
   }
 
-  getSelects(parent) {
+  getSelects() {
+    console.log('checkpt 2');
     const elementMap = {};
     
-    _.each(parent.getElementsByTagName('select'), (element, i) => {
+    _.each(this.form.getElementsByTagName('select'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'select'
       );
       
-      elementMap[name] = { name, element, value: element.value };
+      elementMap[name] = {
+        name: name,
+        element: element,
+        value: element.value,
+        type: 'select',
+        msg: null
+      };
     });
 
     return elementMap;
   }
 
-  getTextAreas(parent) {
+  getTextAreas() {
+    console.log('checkpt 3');
     const elementMap = {};
-    _.each(parent.getElementsByTagName('textarea'), (element, i) => {
+    _.each(this.form.getElementsByTagName('textarea'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'textarea'
       );
-      elementMap[name] = { name, element, value: element.value };
+      elementMap[name] = {
+        name: name,
+        element: element,
+        value: element.value,
+        type: 'textarea',
+        msg: null
+      };
     });
     return elementMap;
   }
 
-  getButtons(parent) {
+  getButtons() {
+    console.log('checkpt 4');
     const elementMap = {};
-    _.each(parent.getElementsByTagName('button'), (element, i) => {
+    _.each(this.form.getElementsByTagName('button'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'button'
       );
-      elementMap[name] = { name, element, value: element.value };
+      elementMap[name] = {
+        name: name,
+        element: element,
+        value: element.value,
+        type: element.type || null,
+        msg: null
+      };
     });
     return elementMap;
   }
 
   parse() {
-    const args = [this.form, this.options];
     return merge(
-      this.getInputs(...args),
-      this.getTextAreas(...args),
-      this.getSelects(...args),
-      this.getButtons(...args)
+      this.getInputs(),
+      this.getTextAreas(),
+      this.getSelects(),
+      this.getButtons()
     );
   }
 };

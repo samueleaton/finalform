@@ -15,7 +15,7 @@
   "rules": {
     "accessor-pairs": 2,                     
     "array-callback-return": 2,              
-    "complexity": 2,                         
+    "complexity": 1,                         
     "consistent-return": 0,                  
     "curly": [1, "multi-or-nest"],           
     "default-case": 2,                       

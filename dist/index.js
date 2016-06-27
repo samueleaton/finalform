@@ -8,9 +8,9 @@ var _FinalForm = require('./FinalForm');
 
 var _FinalForm2 = _interopRequireDefault(_FinalForm);
 
-var _createCustomParser = require('./createCustomParser');
+var _createParser = require('./createParser');
 
-var _createCustomParser2 = _interopRequireDefault(_createCustomParser);
+var _createParser2 = _interopRequireDefault(_createParser);
 
 var _merge = require('./merge');
 
@@ -24,24 +24,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   MIT Licensed
 */
 
-module.exports = function () {
-  return {
-    merge: _merge2.default,
-    parse: function parse(form, options) {
-      var finalForm = new _FinalForm2.default(form, options);
-      var parsedObj = finalForm.parse();
-      _lodash2.default.forOwn(parsedObj, function (val, key) {
-        parsedObj[key] = val.value;
-      });
-      return parsedObj;
-    },
-    serialize: function serialize(form, options) {
-      return _FinalForm2.default.serialize(this.parse(form, options));
-    },
-    create: function create() {
-      var customParser = (0, _createCustomParser2.default)();
-      if (arguments.length) customParser.forms.apply(customParser, arguments);
-      return customParser;
-    }
-  };
-}();
+function createCustomParser() {
+  var parserConfig = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+  if (!_lodash2.default.isPlainObject(parserConfig)) throw new Error('parser config must be a plain object');
+  return (0, _createParser2.default)(parserConfig);
+}
+
+function parseForm(form) {
+  var valuesConfig = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+  if (!_lodash2.default.isPlainObject(valuesConfig)) throw new Error('parser config must be a plain object');
+  return createCustomParser({ forms: [form], values: valuesConfig }).parse();
+}
+
+function serializeForm(form) {
+  var config = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+  return _FinalForm2.default.serialize(parseForm(form, config));
+}
+
+module.exports = { merge: _merge2.default, parseForm: parseForm, serializeForm: serializeForm, createParser: createCustomParser };
