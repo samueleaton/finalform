@@ -1,6 +1,6 @@
 {
   "name": "finalform",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "HTML form fields parser",
   "main": "dist/index.js",
   "scripts": {
