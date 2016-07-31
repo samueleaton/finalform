@@ -2,9 +2,9 @@ import _ from 'lodash';
 
 module.exports = function merge(...args) {
   const merged = {};
-  _.each(_.flatten(args), arg => {
+  _.forEach(_.flatten(args), arg => {
     if (!arg || typeof arg !== 'object') return;
-    _.each(_.keys(arg), key => {
+    _.forEach(_.keys(arg), key => {
       merged[key] = arg[key];
     });
   });

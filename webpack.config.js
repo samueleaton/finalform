@@ -6,7 +6,7 @@ module.exports = {
     entry: "./src/cdn.js",
     output: {
         path: __dirname,
-        filename: "cdn.min.bundle.js"
+        filename: "finalform.min.js"
     },
     module: {
         loaders: [

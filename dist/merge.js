@@ -15,9 +15,9 @@ module.exports = function merge() {
     args[_key] = arguments[_key];
   }
 
-  _lodash2.default.each(_lodash2.default.flatten(args), function (arg) {
+  _lodash2.default.forEach(_lodash2.default.flatten(args), function (arg) {
     if (!arg || (typeof arg === 'undefined' ? 'undefined' : _typeof(arg)) !== 'object') return;
-    _lodash2.default.each(_lodash2.default.keys(arg), function (key) {
+    _lodash2.default.forEach(_lodash2.default.keys(arg), function (key) {
       merged[key] = arg[key];
     });
   });
