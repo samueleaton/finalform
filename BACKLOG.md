@@ -12,7 +12,7 @@ Checklist for getting to v1.0.0:
 Checklist for getting to v1.1.0:
 
 - [ ] Add tests
-- [ ] add `asyncCustomFields` api
+- [ ] add `asyncCustomFields` api (where the value of field is async)
 - [ ] add `validationInputs` api
 - [ ] add lots of comments
 - [ ] add APIs for setting config values after creating parser

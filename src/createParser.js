@@ -14,8 +14,6 @@ module.exports = function createParser(config) {
     trim: true,
     compress: true,
     escape: false,
-    toUpperCase: false,
-    toLowerCase: false,
     map: null,
     checkboxFormat: 'object'
   };
@@ -110,13 +108,9 @@ module.exports = function createParser(config) {
         valuesConfig.compress = config.values.compress;
       if (_.isBoolean(config.values.escape))
         valuesConfig.escape = config.values.escape;
-      if (_.isBoolean(config.values.toUpperCase))
-        valuesConfig.toUpperCase = config.values.toUpperCase;
-      if (_.isBoolean(config.values.toLowerCase))
-        valuesConfig.toLowerCase = config.values.toLowerCase;
       if (_.isFunction(config.values.map))
         valuesConfig.map = config.values.map;
-      if (_.includes(['object', 'array'], valuesConfig.checkboxFormat))
+      if (_.includes(['object', 'array'], config.values.checkboxFormat))
         valuesConfig.checkboxFormat = config.values.checkboxFormat;
     }
   };
@@ -266,15 +260,11 @@ module.exports = function createParser(config) {
         cleanedVal = _.trim(cleanedVal);
       if (valuesConfig.compress)
         cleanedVal = _.replace(cleanedVal, / +/g, ' ');
-      if (valuesConfig.toLowerCase)
-        cleanedVal = _.lowerCase(cleanedVal);
-      if (valuesConfig.toUpperCase)
-        cleanedVal = _.upperCase(cleanedVal);
     }
     if (valuesConfig.escape)
       cleanedVal = _.escape(cleanedVal);
     if (_.isFunction(valuesConfig.map))
-      cleanedVal = valuesConfig.map(cleanedVal);
+      cleanedVal = valuesConfig.map(cleanedVal, type);
     return cleanedVal;
   }
 

@@ -55,8 +55,6 @@ Available Options:
 |`trim`|Boolean|removes spaces from beginning/end of string|`true`|
 |`compress`|Boolean|compress multiple sequential blank spaces to a single space|`true`|
 |`escape`|Boolean|Converts certain characters to corresponding HTML entities|`false`|
-|`toUpperCase`|Boolean|convert values to uppercase|`false`|
-|`toLowerCase`|Boolean|convert values to lowercase|`false`|
 |`checkboxFormat`|String (`'object'`, `'array'`)|whether checkbox result should be an object of `true`, `false` or an array of just the true values|`'object'`|
 |`map`|Function <br />`@param inputValue`<br />`@return newValue`| map all of the parsed values to new value|`null`|
 
