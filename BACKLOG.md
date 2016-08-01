@@ -13,7 +13,7 @@ Checklist for getting to v2.0.0:
 
 - [ ] Remove toUpperCase/toLowerCase
 - [ ] add `asyncCustomFields` api (where the value of field is async)
-- [ ] add `validationInputs` api
+- [ ] ~~add `validationInputs` api (for custom field source when validating)~~ 
 - [ ] add lots of comments
 - [ ] add APIs for setting/overwriting config values after creating parser
 - [ ] extract only used lodash methods to make bundle smaller
