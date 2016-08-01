@@ -68,7 +68,6 @@ const formObj = finalform.parseForm(form, {
     trim: false,
     compress: false,
     escape: true,
-    toUpperCase: true,
     checkboxFormat: 'object'
     map: (value) => value // do something to value
 });
@@ -118,8 +117,6 @@ There are a handful of options to specify in the custom parser. Here is an examp
     trim: Boolean,
     compress: Boolean,
     escape: Boolean,
-    toUpperCase: Boolean,
-    toLowerCase: Boolean,
     checkboxFormat: String,
     map: Function,
   }

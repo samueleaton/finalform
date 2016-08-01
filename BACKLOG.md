@@ -1,4 +1,4 @@
-# FinalForm 1.0 Backlog
+# FinalForm Backlog
 
 Checklist for getting to v1.0.0:
 
@@ -9,11 +9,11 @@ Checklist for getting to v1.0.0:
 - [x] make validation for non-text fields standardized
 - [x] remove form element restriction
 
-Checklist for getting to v1.1.0:
+Checklist for getting to v2.0.0:
 
-- [ ] Add tests
+- [ ] Remove toUpperCase/toLowerCase
 - [ ] add `asyncCustomFields` api (where the value of field is async)
 - [ ] add `validationInputs` api
 - [ ] add lots of comments
-- [ ] add APIs for setting config values after creating parser
+- [ ] add APIs for setting/overwriting config values after creating parser
 - [ ] extract only used lodash methods to make bundle smaller
