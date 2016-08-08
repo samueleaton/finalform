@@ -56,7 +56,7 @@ Available Options:
 |`compress`|Boolean|compress multiple sequential blank spaces to a single space|`true`|
 |`escape`|Boolean|Converts certain characters to corresponding HTML entities|`false`|
 |`checkboxFormat`|String (`'object'`, `'array'`)|whether checkbox result should be an object of `true`, `false` or an array of just the true values|`'object'`|
-|`map`|Function <br />`@param inputValue`<br />`@return newValue`| map all of the parsed values to new value|`null`|
+|`map`|Function <br />`@param inputValue`<br />`@param inputName`<br />`@param inputType`<br />`@return newValue`| map all of the parsed values to new value|`null`|
 
 Example
 
@@ -69,7 +69,7 @@ const formObj = finalform.parseForm(form, {
     compress: false,
     escape: true,
     checkboxFormat: 'object'
-    map: (value) => value // do something to value
+    map: (value, name, type) => value // do something to value
 });
 ```
 

@@ -231,9 +231,9 @@ module.exports = function createParser(config) {
     });
   }
 
-  function cleanObject({ value, type }) {
+  function cleanObject({ value, type, name }) {
     _.forOwn(value, (val, key) => {
-      let cleanedVal = cleanInput({ value: val, type: null });
+      let cleanedVal = cleanInput({ value: val, type: null, name: name });
       if (cleanedVal === 'true')
         cleanedVal = true;
       else if (cleanedVal === 'false')
@@ -246,14 +246,14 @@ module.exports = function createParser(config) {
       return _.keys(_.pickBy(value, val => val === 'true' || val === true));
   }
 
-  function cleanArray({ value, type }) {
+  function cleanArray({ value, type, name }) {
     _.forEach(value, (val, i) => {
-      value[i] = cleanInput({ value: val, type: null });
+      value[i] = cleanInput({ value: val, type: null, name: name });
     });
     return value;
   }
 
-  function cleanText({ value, type }) {
+  function cleanText({ value, type, name }) {
     let cleanedVal = value;
     if (type !== 'textarea') {
       if (valuesConfig.trim)
@@ -264,22 +264,22 @@ module.exports = function createParser(config) {
     if (valuesConfig.escape)
       cleanedVal = _.escape(cleanedVal);
     if (_.isFunction(valuesConfig.map))
-      cleanedVal = valuesConfig.map(cleanedVal, type);
+      cleanedVal = valuesConfig.map(cleanedVal, name, type);
     return cleanedVal;
   }
 
-  function cleanInput({ value, type }) {
+  function cleanInput({ value, type, name }) {
     if (_.isUndefined(value))
       throw new FinalFormError('input value cannot be undefined');
     else if (_.isUndefined(type))
       throw new FinalFormError('input type cannot be undefined');
 
     if (_.isPlainObject(value))
-      return cleanObject({ value, type });
+      return cleanObject({ value, type, name });
     else if (_.isArray(value))
-      return cleanArray({ value, type });
+      return cleanArray({ value, type, name });
     else if (_.isString(value))
-      return cleanText({ value, type });
+      return cleanText({ value, type, name });
     else
       return value;
   }
@@ -289,7 +289,7 @@ module.exports = function createParser(config) {
       if (val.type === 'custom')
         formObj[key] = val.value;
       else
-        formObj[key] = cleanInput(val);
+        formObj[key] = cleanInput({ value: val.value, type: val.type, name: val.name });
     });
     return formObj;
   }

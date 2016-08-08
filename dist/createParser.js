@@ -32,8 +32,6 @@ module.exports = function createParser(config) {
     trim: true,
     compress: true,
     escape: false,
-    toUpperCase: false,
-    toLowerCase: false,
     map: null,
     checkboxFormat: 'object'
   };
@@ -112,10 +110,8 @@ module.exports = function createParser(config) {
       if (_lodash2.default.isBoolean(config.values.trim)) valuesConfig.trim = config.values.trim;
       if (_lodash2.default.isBoolean(config.values.compress)) valuesConfig.compress = config.values.compress;
       if (_lodash2.default.isBoolean(config.values.escape)) valuesConfig.escape = config.values.escape;
-      if (_lodash2.default.isBoolean(config.values.toUpperCase)) valuesConfig.toUpperCase = config.values.toUpperCase;
-      if (_lodash2.default.isBoolean(config.values.toLowerCase)) valuesConfig.toLowerCase = config.values.toLowerCase;
       if (_lodash2.default.isFunction(config.values.map)) valuesConfig.map = config.values.map;
-      if (_lodash2.default.includes(['object', 'array'], valuesConfig.checkboxFormat)) valuesConfig.checkboxFormat = config.values.checkboxFormat;
+      if (_lodash2.default.includes(['object', 'array'], config.values.checkboxFormat)) valuesConfig.checkboxFormat = config.values.checkboxFormat;
     }
   };
 
@@ -215,9 +211,10 @@ module.exports = function createParser(config) {
   function cleanObject(_ref) {
     var value = _ref.value;
     var type = _ref.type;
+    var name = _ref.name;
 
     _lodash2.default.forOwn(value, function (val, key) {
-      var cleanedVal = cleanInput({ value: val, type: null });
+      var cleanedVal = cleanInput({ value: val, type: null, name: name });
       if (cleanedVal === 'true') cleanedVal = true;else if (cleanedVal === 'false') cleanedVal = false;
       value[key] = cleanedVal;
     });
@@ -229,9 +226,10 @@ module.exports = function createParser(config) {
   function cleanArray(_ref2) {
     var value = _ref2.value;
     var type = _ref2.type;
+    var name = _ref2.name;
 
     _lodash2.default.forEach(value, function (val, i) {
-      value[i] = cleanInput({ value: val, type: null });
+      value[i] = cleanInput({ value: val, type: null, name: name });
     });
     return value;
   }
@@ -239,31 +237,31 @@ module.exports = function createParser(config) {
   function cleanText(_ref3) {
     var value = _ref3.value;
     var type = _ref3.type;
+    var name = _ref3.name;
 
     var cleanedVal = value;
     if (type !== 'textarea') {
       if (valuesConfig.trim) cleanedVal = _lodash2.default.trim(cleanedVal);
       if (valuesConfig.compress) cleanedVal = _lodash2.default.replace(cleanedVal, / +/g, ' ');
-      if (valuesConfig.toLowerCase) cleanedVal = _lodash2.default.lowerCase(cleanedVal);
-      if (valuesConfig.toUpperCase) cleanedVal = _lodash2.default.upperCase(cleanedVal);
     }
     if (valuesConfig.escape) cleanedVal = _lodash2.default.escape(cleanedVal);
-    if (_lodash2.default.isFunction(valuesConfig.map)) cleanedVal = valuesConfig.map(cleanedVal);
+    if (_lodash2.default.isFunction(valuesConfig.map)) cleanedVal = valuesConfig.map(cleanedVal, name, type);
     return cleanedVal;
   }
 
   function cleanInput(_ref4) {
     var value = _ref4.value;
     var type = _ref4.type;
+    var name = _ref4.name;
 
     if (_lodash2.default.isUndefined(value)) throw new _FinalFormError2.default('input value cannot be undefined');else if (_lodash2.default.isUndefined(type)) throw new _FinalFormError2.default('input type cannot be undefined');
 
-    if (_lodash2.default.isPlainObject(value)) return cleanObject({ value: value, type: type });else if (_lodash2.default.isArray(value)) return cleanArray({ value: value, type: type });else if (_lodash2.default.isString(value)) return cleanText({ value: value, type: type });else return value;
+    if (_lodash2.default.isPlainObject(value)) return cleanObject({ value: value, type: type, name: name });else if (_lodash2.default.isArray(value)) return cleanArray({ value: value, type: type, name: name });else if (_lodash2.default.isString(value)) return cleanText({ value: value, type: type, name: name });else return value;
   }
 
   function cleanValues(formObj) {
     _lodash2.default.forOwn(formObj, function (val, key) {
-      if (val.type === 'custom') formObj[key] = val.value;else formObj[key] = cleanInput(val);
+      if (val.type === 'custom') formObj[key] = val.value;else formObj[key] = cleanInput({ value: val.value, type: val.type, name: val.name });
     });
     return formObj;
   }
