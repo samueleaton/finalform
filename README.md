@@ -270,3 +270,15 @@ parser.parse().then(parsedForm => {
   console.log(parsedForm.invalidFields); // [ Object ]
 });
 ```
+
+##### Order of Operations
+
+This is the order of operations that the Custom Parser Options are processed:
+
+1) Merge `forms` and `customFields`  
+2) `pick`  
+3) `mapNames`  
+4) `validations`  
+5) `asyncValidations`  
+6) `values` transforms: `trim`, `compress`, `escape`, `map`
+
