@@ -160,13 +160,17 @@ module.exports = function createParser(config) {
     if (_.isPlainObject(validationRes)) {
       if (!_.isBoolean(validationRes.isValid))
         throw new FinalFormError('validation object must have property "isValid" (Boolean)');
-      if (validationRes.msg)
-        formObj[fieldName].msg = validationRes.msg;
       if (validationRes.isValid)
         validationInfo.validFields.push(formObj[fieldName]);
+      if (validationRes.msg)
+        formObj[fieldName].msg = validationRes.msg;
+      if (_.has(validationRes, 'meta') && _.isPlainObject(validationRes.meta))
+        formObj[fieldName].meta = validationRes.meta;
       else
         validationInfo.invalidFields.push(formObj[fieldName]);
     }
+    else if (validationRes)
+      validationInfo.validFields.push(formObj[fieldName]);
     else if (!validationRes)
       validationInfo.invalidFields.push(formObj[fieldName]);
   }
@@ -315,7 +319,7 @@ module.exports = function createParser(config) {
       mapKeys(formObj);
     
     addValidationProperties(formObj);
-
+    
     if (!_.isEmpty(syncValidationCallbacks))
       runSyncValidations(formObj);
 

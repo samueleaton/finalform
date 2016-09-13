@@ -27,7 +27,7 @@ There are two ways to use FinalForm:
 1) A quick form parser  
 2) A more advanced custom form parser
 
-### Quick Form Parser
+## Quick Form Parser
 
 Simply pass a form element into the `parseForm` method. 
 
@@ -44,7 +44,7 @@ const form = document.querySelector('#myForm');
 const formObj = finalform.parseForm(form);
 ```
 
-#### Values Config
+### Values Config
 
 Pass an object of options as the second parameter to modify the values.
 
@@ -73,9 +73,9 @@ const formObj = finalform.parseForm(form, {
 });
 ```
 
-### Custom Form Parser
+## Custom Form Parser
 
-#### Creating a Custom Parser
+### Creating a Custom Parser
 
 Create a custom parser using the `createParser` method.
 
@@ -83,14 +83,14 @@ Create a custom parser using the `createParser` method.
 const customParser = finalform.createParser({ /* parser options */ });
 ```
 
-#### Running the Parser
+### Running the Parser
 
 ``` javascript
 const customParser = finalform.createParser({ /* parser options */ });
 customParser.parse();
 ```
 
-#### Custom Parser Options
+### Custom Parser Options
 
 There are a handful of options to specify in the custom parser. Here is an example of all of the available properties (a description of each is given after the example):  
 
@@ -124,7 +124,7 @@ There are a handful of options to specify in the custom parser. Here is an examp
 ```
 
 
-##### Adding Forms to Custom Parser
+#### Adding Forms to Custom Parser
 
 You can add as many forms as you want to the custom parser using the `forms` array, it will parse them all at one.
 
@@ -133,7 +133,7 @@ const customParser = finalform.createParser({ forms: [HTMLElement, /*etc*/] });
 parser.parse();
 ```
 
-##### Changing Field Names in the Output
+#### Changing Field Names in the Output
 
 If you want to take the output of the parser and plug it into another API, you will probably want to change the name of some of the fields.
 
@@ -156,7 +156,7 @@ console.log(parsedForm.Email); // ironman@stark.com
 console.log(parsedForm.Company); // Stark Industries
 ```
 
-##### Picking Specified Fields
+#### Picking Specified Fields
 
 If you want to take the output of the parser and plug it into another API, you will probably want to only pick a few fields from the output.
 
@@ -178,7 +178,7 @@ console.log(parsedForm.email); // ironman@stark.com
 console.log(parsedForm.company); // undefined
 ```
 
-##### Adding Custom Fields to the Parser
+#### Adding Custom Fields to the Parser
 
 You can attach custom fields to the parser. This allows you to pull in additional data that may not be associated with any form.
 
@@ -203,7 +203,7 @@ console.log(parsedForm.email); // ironman@stark.com
 console.log(parsedForm.location); // Manhattan
 ```
 
-##### Syncronous Validations
+#### Syncronous Validations
 
 You can specify validations to run against all of the values and return whether it is valid or not.
 
@@ -233,7 +233,7 @@ console.log(parsedForm.isValid); // false
 console.log(parsedForm.invalidFields); // [ Object ]
 ```
 
-##### Asyncronous Validations
+#### Asyncronous Validations
 
 Asynchronous validations are good if you need to hit up a server before validating some fields.
 
@@ -271,7 +271,40 @@ parser.parse().then(parsedForm => {
 });
 ```
 
-##### Order of Operations
+##### Validation Return Object
+
+The object that can be returned from both synchronous and asynchronous validations takes the following properties:
+
+- `isValid` boolean - specifies the validation is valid  
+- `msg` string - an optional string to give more context to the error  
+- `meta` object - an object to store any additional meta information relating to the validation  
+
+Example
+
+``` javascript
+let emailValidationCount = 0;
+const customParser = finalform.createParser({
+  /* other options... */
+  validations: {
+    email: value => {
+      if (email.trim().length)
+        return true;
+      else {
+        return {
+          isValid: false,
+          msg: 'Field is required',
+          meta: {
+            validationCount: emailValidationCount++,
+            isEmpty: email.trim().length === 0
+          }
+        };
+      }
+    }
+  }
+});
+```
+
+#### Order of Operations
 
 This is the order of operations that the Custom Parser Options are processed:
 

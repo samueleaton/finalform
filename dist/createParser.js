@@ -155,9 +155,10 @@ module.exports = function createParser(config) {
   function processUserValidationResponse(formObj, fieldName, validationRes) {
     if (_lodash2.default.isPlainObject(validationRes)) {
       if (!_lodash2.default.isBoolean(validationRes.isValid)) throw new _FinalFormError2.default('validation object must have property "isValid" (Boolean)');
+      if (validationRes.isValid) validationInfo.validFields.push(formObj[fieldName]);
       if (validationRes.msg) formObj[fieldName].msg = validationRes.msg;
-      if (validationRes.isValid) validationInfo.validFields.push(formObj[fieldName]);else validationInfo.invalidFields.push(formObj[fieldName]);
-    } else if (!validationRes) validationInfo.invalidFields.push(formObj[fieldName]);
+      if (_lodash2.default.has(validationRes, 'meta') && _lodash2.default.isPlainObject(validationRes.meta)) formObj[fieldName].meta = validationRes.meta;else validationInfo.invalidFields.push(formObj[fieldName]);
+    } else if (validationRes) validationInfo.validFields.push(formObj[fieldName]);else if (!validationRes) validationInfo.invalidFields.push(formObj[fieldName]);
   }
 
   function runSyncValidations(formObj) {
