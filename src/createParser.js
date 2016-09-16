@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from './lodash';
 import FinalForm from './FinalForm';
 import merge from './merge';
 import sparallel from 'sparallel';
@@ -63,7 +63,7 @@ module.exports = function createParser(config) {
     pick() {
       if (!_.isArray(config.pick))
         throw new FinalFormError('"pick" must be an array field names');
-      _.each(config.pick, field => {
+      _.forEach(config.pick, field => {
         if (mappedKeysAndValues[field])
           keysToPick.push(mappedKeysAndValues[field]);
         keysToPick.push(field);
@@ -303,7 +303,7 @@ module.exports = function createParser(config) {
       _.map(forms, form => form.parse())
     );
 
-    _.each(definedFields, definedField => {
+    _.forEach(definedFields, definedField => {
       formObj[definedField.name] = {
         value: definedField.getter(),
         name: definedField.name,

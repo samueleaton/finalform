@@ -4,7 +4,7 @@
   MIT Licensed
 */
 
-import _ from 'lodash';
+import _ from './lodash';
 import FinalForm from './FinalForm';
 import createParser from './createParser';
 import merge from './merge';

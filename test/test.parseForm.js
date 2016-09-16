@@ -174,7 +174,7 @@ describe('finalform.parseForm', function() {
 
     /* map */
     describe('map', function() {
-      it('should map all textual values', function() {
+      it('should map all single answer inputs', function() {
         const formString = `
           <form id="form">
             <input type="text" id="email" value="Sam@DevMunchies.com" />
@@ -203,7 +203,7 @@ describe('finalform.parseForm', function() {
         });
       });
 
-      it('should pass the type as the second parameter if is a textual type', function() {
+      it('should pass the name as the second parameter unless if a multi anser input (e.g. checkbox)', function() {
         const formString = `
           <form id="form">
             <input type="text" id="email" value="Sam@DevMunchies.com" />
@@ -222,8 +222,49 @@ describe('finalform.parseForm', function() {
         const formElement = document.querySelector('#form');
 
         const parsedForm = finalform.parseForm(formElement, {
-          map: (val, type) => type
+          map: (val, name, type) => {
+            return name;
+          }
         });
+        console.log('\nparsedForm: ', parsedForm)
+        expect(parsedForm).to.eql({
+          email: 'email',
+          fname: 'fname',
+          lname: 'lname',
+          company: 'company',
+          'super-textarea': 'super-textarea',
+          color: 'color',
+          animal: {
+            cat: false,
+            kangaroo: true
+          }
+        });
+      });
+
+      it('should pass the type as the third parameter unless if a multi anser input (e.g. checkbox)', function() {
+        const formString = `
+          <form id="form">
+            <input type="text" id="email" value="Sam@DevMunchies.com" />
+            <input id="fname" value="Sam" />
+            <input type="text" id="lname" value="Eaton" />
+            <input type="text" id="company" value="Qualtrics" />
+            <textarea name="super-textarea">this is a TEXTAREA</textarea>
+            <input type="radio" name="color" value="GREEN" />
+            <input type="radio" name="color" value="ORANGE" />
+            <input type="radio" name="color" value="BLUE" checked />
+            <input type="checkbox" name="animal" value="cat" />
+            <input type="checkbox" name="animal" value="kangaroo" checked />
+          </form>
+        `;
+        formContainer.innerHTML = formString;
+        const formElement = document.querySelector('#form');
+
+        const parsedForm = finalform.parseForm(formElement, {
+          map: (val, name, type) => {
+            return type;
+          }
+        });
+        console.log('\nparsedForm: ', parsedForm)
         expect(parsedForm).to.eql({
           email: 'text',
           fname: 'text',

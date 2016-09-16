@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from './lodash';
 import merge from './merge';
 
 export default class FinalForm {
@@ -26,7 +26,7 @@ export default class FinalForm {
 
     if (!parsedForm || typeof parsedForm !== 'object') return '';
 
-    _.each(_.keys(parsedForm), key => {
+    _.forEach(_.keys(parsedForm), key => {
       if (
         !parsedForm[key] ||
         typeof parsedForm[key] === 'string' ||
@@ -36,7 +36,7 @@ export default class FinalForm {
 
       else if (_.isArray(parsedForm[key])) {
         let valueStr = '';
-        _.each(parsedForm[key], val => { valueStr += val + ','; });
+        _.forEach(parsedForm[key], val => { valueStr += val + ','; });
         valueStr = valueStr.slice(0, -1);
         serialized.push(encodeURIComponent(key) + '=' + encodeURIComponent(valueStr));
       }
@@ -65,7 +65,7 @@ export default class FinalForm {
     const inputsObj = {};
     const elementMap = {};
 
-    _.each(this.form.getElementsByTagName('input'), (element, i) => {
+    _.forEach(this.form.getElementsByTagName('input'), (element, i) => {
       const type = element.type || 'text';
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         inputsObj, 'input', type
@@ -100,7 +100,7 @@ export default class FinalForm {
   getSelects() {
     const elementMap = {};
     
-    _.each(this.form.getElementsByTagName('select'), (element, i) => {
+    _.forEach(this.form.getElementsByTagName('select'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'select'
       );
@@ -119,7 +119,7 @@ export default class FinalForm {
 
   getTextAreas() {
     const elementMap = {};
-    _.each(this.form.getElementsByTagName('textarea'), (element, i) => {
+    _.forEach(this.form.getElementsByTagName('textarea'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'textarea'
       );
@@ -136,7 +136,7 @@ export default class FinalForm {
 
   getButtons() {
     const elementMap = {};
-    _.each(this.form.getElementsByTagName('button'), (element, i) => {
+    _.forEach(this.form.getElementsByTagName('button'), (element, i) => {
       const name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(
         elementMap, 'button'
       );

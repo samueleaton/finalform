@@ -1,6 +1,6 @@
 'use strict';
 
-var _lodash = require('lodash');
+var _lodash = require('./lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -75,7 +75,7 @@ module.exports = function createParser(config) {
     },
     pick: function pick() {
       if (!_lodash2.default.isArray(config.pick)) throw new _FinalFormError2.default('"pick" must be an array field names');
-      _lodash2.default.each(config.pick, function (field) {
+      _lodash2.default.forEach(config.pick, function (field) {
         if (mappedKeysAndValues[field]) keysToPick.push(mappedKeysAndValues[field]);
         keysToPick.push(field);
       });
@@ -272,7 +272,7 @@ module.exports = function createParser(config) {
       return form.parse();
     }));
 
-    _lodash2.default.each(definedFields, function (definedField) {
+    _lodash2.default.forEach(definedFields, function (definedField) {
       formObj[definedField.name] = {
         value: definedField.getter(),
         name: definedField.name,

@@ -8,7 +8,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _lodash = require('lodash');
+var _lodash = require('./lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -45,10 +45,10 @@ var FinalForm = function () {
 
       if (!parsedForm || (typeof parsedForm === 'undefined' ? 'undefined' : _typeof(parsedForm)) !== 'object') return '';
 
-      _lodash2.default.each(_lodash2.default.keys(parsedForm), function (key) {
+      _lodash2.default.forEach(_lodash2.default.keys(parsedForm), function (key) {
         if (!parsedForm[key] || typeof parsedForm[key] === 'string' || typeof parsedForm[key] === 'number') serialized.push(encodeURIComponent(key) + '=' + encodeURIComponent(parsedForm[key]));else if (_lodash2.default.isArray(parsedForm[key])) {
           var valueStr = '';
-          _lodash2.default.each(parsedForm[key], function (val) {
+          _lodash2.default.forEach(parsedForm[key], function (val) {
             valueStr += val + ',';
           });
           valueStr = valueStr.slice(0, -1);
@@ -81,7 +81,7 @@ var FinalForm = function () {
       var inputsObj = {};
       var elementMap = {};
 
-      _lodash2.default.each(this.form.getElementsByTagName('input'), function (element, i) {
+      _lodash2.default.forEach(this.form.getElementsByTagName('input'), function (element, i) {
         var type = element.type || 'text';
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(inputsObj, 'input', type);
         var val = element.value;
@@ -109,7 +109,7 @@ var FinalForm = function () {
     value: function getSelects() {
       var elementMap = {};
 
-      _lodash2.default.each(this.form.getElementsByTagName('select'), function (element, i) {
+      _lodash2.default.forEach(this.form.getElementsByTagName('select'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'select');
 
         elementMap[name] = {
@@ -127,7 +127,7 @@ var FinalForm = function () {
     key: 'getTextAreas',
     value: function getTextAreas() {
       var elementMap = {};
-      _lodash2.default.each(this.form.getElementsByTagName('textarea'), function (element, i) {
+      _lodash2.default.forEach(this.form.getElementsByTagName('textarea'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'textarea');
         elementMap[name] = {
           name: name,
@@ -143,7 +143,7 @@ var FinalForm = function () {
     key: 'getButtons',
     value: function getButtons() {
       var elementMap = {};
-      _lodash2.default.each(this.form.getElementsByTagName('button'), function (element, i) {
+      _lodash2.default.forEach(this.form.getElementsByTagName('button'), function (element, i) {
         var name = FinalForm.getFieldName(element) || FinalForm.generateKeyName(elementMap, 'button');
         elementMap[name] = {
           name: name,

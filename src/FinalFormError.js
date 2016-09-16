@@ -1,4 +1,3 @@
-import _ from 'lodash';
 
 class FinalFormError {
   constructor(msg) {
@@ -7,5 +6,6 @@ class FinalFormError {
     this.stack = new Error().stack;
   }
 }
-FinalFormError.prototype = _.create(Error.prototype);
+if (Object && Object.create)
+  FinalFormError.prototype = Object.create(Error.prototype);
 export default FinalFormError;
