@@ -4,19 +4,19 @@
   MIT Licensed
 */
 
-import _ from './lodash';
+import { isPlainObject } from './utils';
 import FinalForm from './FinalForm';
 import createParser from './createParser';
 import merge from './merge';
 
 function createCustomParser(parserConfig = {}) {
-  if (!_.isPlainObject(parserConfig))
+  if (!isPlainObject(parserConfig))
     throw new Error('parser config must be a plain object');
   return createParser(parserConfig);
 }
 
 function parseForm(form, valuesConfig = {}) {
-  if (!_.isPlainObject(valuesConfig))
+  if (!isPlainObject(valuesConfig))
     throw new Error('parser config must be a plain object');
   return createCustomParser({ forms: [ form ], values: valuesConfig }).parse();
 }

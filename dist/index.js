@@ -1,8 +1,6 @@
 'use strict';
 
-var _lodash = require('./lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
+var _utils = require('./utils');
 
 var _FinalForm = require('./FinalForm');
 
@@ -27,14 +25,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function createCustomParser() {
   var parserConfig = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-  if (!_lodash2.default.isPlainObject(parserConfig)) throw new Error('parser config must be a plain object');
+  if (!(0, _utils.isPlainObject)(parserConfig)) throw new Error('parser config must be a plain object');
   return (0, _createParser2.default)(parserConfig);
 }
 
 function parseForm(form) {
   var valuesConfig = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-  if (!_lodash2.default.isPlainObject(valuesConfig)) throw new Error('parser config must be a plain object');
+  if (!(0, _utils.isPlainObject)(valuesConfig)) throw new Error('parser config must be a plain object');
   return createCustomParser({ forms: [form], values: valuesConfig }).parse();
 }
 

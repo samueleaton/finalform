@@ -1,4 +1,23 @@
-import _ from './lodash';
+import {
+  isPlainObject,
+  forOwn,
+  forEach,
+  has,
+  map,
+  keys,
+  keyBy,
+  pickBy,
+  concat,
+  isArray,
+  isBoolean,
+  isFunction,
+  isString,
+  isEmpty,
+  includes,
+  trim,
+  replace,
+  escape
+} from './utils';
 import FinalForm from './FinalForm';
 import merge from './merge';
 import sparallel from 'sparallel';
@@ -31,20 +50,20 @@ module.exports = function createParser(config) {
     whether they are valid or invalid is another question
   */
   function getValidatedFields() {
-    const invalidFields = _.keys(
-      _.keyBy(validationInfo.invalidFields, fieldObj => fieldObj.name)
+    const invalidFields = keys(
+      keyBy(validationInfo.invalidFields, fieldObj => fieldObj.name)
     );
-    const validFields = _.keys(
-      _.keyBy(validationInfo.validFields, fieldObj => fieldObj.name)
+    const validFields = keys(
+      keyBy(validationInfo.validFields, fieldObj => fieldObj.name)
     );
-    return _.concat(invalidFields, validFields);
+    return concat(invalidFields, validFields);
   }
 
   const configUtils = {
     forms() {
-      if (!_.isArray(config.forms))
+      if (!isArray(config.forms))
         throw new FinalFormError('"forms" must be an array of forms');
-      _.forEach(config.forms, form => {
+      forEach(config.forms, form => {
         if (form instanceof HTMLElement)
           forms.push(new FinalForm(form));
         else
@@ -52,85 +71,85 @@ module.exports = function createParser(config) {
       });
     },
     mapNames() {
-      if (!_.isPlainObject(config.mapNames))
+      if (!isPlainObject(config.mapNames))
         throw new FinalFormError('"mapNames" must be a plain object');
-      _.forOwn(config.mapNames, (mapValue, mapKey) => {
+      forOwn(config.mapNames, (mapValue, mapKey) => {
         mappedKeysAndValues[mapKey] = mapValue;
         mappedKeysAndValues[mapValue] = mapKey;
         keyMap[mapKey] = mapValue;
       });
     },
     pick() {
-      if (!_.isArray(config.pick))
+      if (!isArray(config.pick))
         throw new FinalFormError('"pick" must be an array field names');
-      _.forEach(config.pick, field => {
+      forEach(config.pick, field => {
         if (mappedKeysAndValues[field])
           keysToPick.push(mappedKeysAndValues[field]);
         keysToPick.push(field);
       });
     },
     customFields() {
-      if (!_.isPlainObject(config.customFields))
+      if (!isPlainObject(config.customFields))
         throw new FinalFormError('"customFields" must be a plain object');
-      _.forOwn(config.customFields, (func, fieldName) => {
+      forOwn(config.customFields, (func, fieldName) => {
         definedFields.push({ name: fieldName, getter: func });
       });
     },
     validations() {
-      if (!_.isPlainObject(config.validations))
+      if (!isPlainObject(config.validations))
         throw new FinalFormError('"validations" must be a plain object');
-      _.forOwn(config.validations, (func, fieldName) => {
-        if (!_.isFunction(func))
+      forOwn(config.validations, (func, fieldName) => {
+        if (!isFunction(func))
           throw new FinalFormError('validation must be a function');
         syncValidationCallbacks[fieldName] = func;
       });
     },
     asyncValidations() {
-      if (!_.isPlainObject(config.asyncValidations))
+      if (!isPlainObject(config.asyncValidations))
         throw new FinalFormError('"asyncValidations" must be a plain object');
-      _.forOwn(config.asyncValidations, (func, fieldName) => {
-        if (!_.isFunction(func))
+      forOwn(config.asyncValidations, (func, fieldName) => {
+        if (!isFunction(func))
           throw new FinalFormError('asyncValidations must be a function');
         asyncValidationCallbacks[fieldName] = func;
       });
     },
     validationInputs() {
-      if (!_.isPlainObject(config.validationInputs))
+      if (!isPlainObject(config.validationInputs))
         throw new FinalFormError('"validationInputs" must be a plain object');
-      _.forOwn(config.validationInputs, (value, fieldName) => {
+      forOwn(config.validationInputs, (value, fieldName) => {
         validationInputs[fieldName] = value;
       });
     },
     values() {
-      if (_.isBoolean(config.values.trim))
+      if (isBoolean(config.values.trim))
         valuesConfig.trim = config.values.trim;
-      if (_.isBoolean(config.values.compress))
+      if (isBoolean(config.values.compress))
         valuesConfig.compress = config.values.compress;
-      if (_.isBoolean(config.values.escape))
+      if (isBoolean(config.values.escape))
         valuesConfig.escape = config.values.escape;
-      if (_.isFunction(config.values.map))
+      if (isFunction(config.values.map))
         valuesConfig.map = config.values.map;
-      if (_.includes(['object', 'array'], config.values.checkboxFormat))
+      if (includes(['object', 'array'], config.values.checkboxFormat))
         valuesConfig.checkboxFormat = config.values.checkboxFormat;
     }
   };
 
   function pickKeys(formObj) {
-    _.forOwn(formObj, (val, key) => {
-      if (!_.includes(keysToPick, key))
+    forOwn(formObj, (val, key) => {
+      if (!includes(keysToPick, key))
         delete formObj[key];
     });
   }
 
   function mapKeys(formObj) {
-    _.forOwn(keyMap, (val, key) => {
-      if (_.has(formObj, val)) {
+    forOwn(keyMap, (val, key) => {
+      if (has(formObj, val)) {
         return console.error(
           'FinalForm Error: cannot map "' + key + '" to "' + val + '". "' +
           val + '" already exists.'
         );
       }
-      if (_.has(formObj, key)) {
+      if (has(formObj, key)) {
         formObj[val] = formObj[key];
         formObj[val].name = val;
         delete formObj[key];
@@ -157,14 +176,14 @@ module.exports = function createParser(config) {
   }
 
   function processUserValidationResponse(formObj, fieldName, validationRes) {
-    if (_.isPlainObject(validationRes)) {
-      if (!_.isBoolean(validationRes.isValid))
+    if (isPlainObject(validationRes)) {
+      if (!isBoolean(validationRes.isValid))
         throw new FinalFormError('validation object must have property "isValid" (Boolean)');
       if (validationRes.isValid)
         validationInfo.validFields.push(formObj[fieldName]);
       if (validationRes.msg)
         formObj[fieldName].msg = validationRes.msg;
-      if (_.has(validationRes, 'meta') && _.isPlainObject(validationRes.meta))
+      if (has(validationRes, 'meta') && isPlainObject(validationRes.meta))
         formObj[fieldName].meta = validationRes.meta;
       else
         validationInfo.invalidFields.push(formObj[fieldName]);
@@ -176,16 +195,16 @@ module.exports = function createParser(config) {
   }
 
   function runSyncValidations(formObj) {
-    _.forOwn(syncValidationCallbacks, (validationCb, fieldName) => {
-      if (_.includes(getValidatedFields(), fieldName))
+    forOwn(syncValidationCallbacks, (validationCb, fieldName) => {
+      if (includes(getValidatedFields(), fieldName))
         throw new FinalFormError(`"${fieldName}" cannot be validated twice`);
 
       let objKey;
-      if (_.has(formObj, fieldName))
+      if (has(formObj, fieldName))
         objKey = fieldName;
-      else if (_.has(formObj, mappedKeysAndValues[fieldName]))
+      else if (has(formObj, mappedKeysAndValues[fieldName]))
         objKey = mappedKeysAndValues[fieldName];
-      if (!_.has(formObj, objKey)) {
+      if (!has(formObj, objKey)) {
         return console.warn(
           'FinalForm: cannot validate "' + objKey + '". Field Not found.'
         );
@@ -201,16 +220,16 @@ module.exports = function createParser(config) {
   function runAsyncValidations(formObj, asyncValidationsCb) {
     const asyncValidationsArray = [];
 
-    _.forOwn(asyncValidationCallbacks, (validationCb, fieldName) => {
-      if (_.includes(getValidatedFields(), fieldName))
+    forOwn(asyncValidationCallbacks, (validationCb, fieldName) => {
+      if (includes(getValidatedFields(), fieldName))
         throw new FinalFormError(`"${fieldName}" cannot be validated twice`);
       let objKey;
-      if (_.has(formObj, fieldName))
+      if (has(formObj, fieldName))
         objKey = fieldName;
-      else if (_.has(formObj, mappedKeysAndValues[fieldName]))
+      else if (has(formObj, mappedKeysAndValues[fieldName]))
         objKey = mappedKeysAndValues[fieldName];
 
-      if (!_.has(formObj, objKey)) {
+      if (!has(formObj, objKey)) {
         return console.warn(
           'FinalForm: cannot validate "' + objKey + '". Field Not found.'
         );
@@ -227,7 +246,7 @@ module.exports = function createParser(config) {
     });
 
     sparallel(asyncValidationsArray).then(userResponses => {
-      _.forOwn(userResponses, (userResponse, fieldName) => {
+      forOwn(userResponses, (userResponse, fieldName) => {
         processUserValidationResponse(formObj, fieldName, userResponse);
       });
       validationInfo.isValid = validationInfo.invalidFields.length === 0;
@@ -236,7 +255,7 @@ module.exports = function createParser(config) {
   }
 
   function cleanObject({ value, type, name }) {
-    _.forOwn(value, (val, key) => {
+    forOwn(value, (val, key) => {
       let cleanedVal = cleanInput({ value: val, type: null, name: name });
       if (cleanedVal === 'true')
         cleanedVal = true;
@@ -247,11 +266,11 @@ module.exports = function createParser(config) {
     if (type !== 'checkbox' || (type === 'checkbox' && valuesConfig.checkboxFormat === 'object'))
       return value;
     else
-      return _.keys(_.pickBy(value, val => val === 'true' || val === true));
+      return keys(pickBy(value, val => val === 'true' || val === true));
   }
 
   function cleanArray({ value, type, name }) {
-    _.forEach(value, (val, i) => {
+    forEach(value, (val, i) => {
       value[i] = cleanInput({ value: val, type: null, name: name });
     });
     return value;
@@ -261,35 +280,35 @@ module.exports = function createParser(config) {
     let cleanedVal = value;
     if (type !== 'textarea') {
       if (valuesConfig.trim)
-        cleanedVal = _.trim(cleanedVal);
+        cleanedVal = trim(cleanedVal);
       if (valuesConfig.compress)
-        cleanedVal = _.replace(cleanedVal, / +/g, ' ');
+        cleanedVal = replace(cleanedVal, / +/g, ' ');
     }
     if (valuesConfig.escape)
-      cleanedVal = _.escape(cleanedVal);
-    if (_.isFunction(valuesConfig.map))
+      cleanedVal = escape(cleanedVal);
+    if (isFunction(valuesConfig.map))
       cleanedVal = valuesConfig.map(cleanedVal, name, type);
     return cleanedVal;
   }
 
   function cleanInput({ value, type, name }) {
-    if (_.isUndefined(value))
+    if (typeof value === 'undefined')
       throw new FinalFormError('input value cannot be undefined');
-    else if (_.isUndefined(type))
+    else if (typeof type === 'undefined')
       throw new FinalFormError('input type cannot be undefined');
 
-    if (_.isPlainObject(value))
+    if (isPlainObject(value))
       return cleanObject({ value, type, name });
-    else if (_.isArray(value))
+    else if (isArray(value))
       return cleanArray({ value, type, name });
-    else if (_.isString(value))
+    else if (isString(value))
       return cleanText({ value, type, name });
     else
       return value;
   }
 
   function cleanValues(formObj) {
-    _.forOwn(formObj, (val, key) => {
+    forOwn(formObj, (val, key) => {
       if (val.type === 'custom')
         formObj[key] = val.value;
       else
@@ -300,10 +319,10 @@ module.exports = function createParser(config) {
 
   function parse() {
     const formObj = merge(
-      _.map(forms, form => form.parse())
+      map(forms, form => form.parse())
     );
 
-    _.forEach(definedFields, definedField => {
+    forEach(definedFields, definedField => {
       formObj[definedField.name] = {
         value: definedField.getter(),
         name: definedField.name,
@@ -315,15 +334,15 @@ module.exports = function createParser(config) {
     if (keysToPick.length)
       pickKeys(formObj);
 
-    if (!_.isEmpty(keyMap))
+    if (!isEmpty(keyMap))
       mapKeys(formObj);
     
     addValidationProperties(formObj);
     
-    if (!_.isEmpty(syncValidationCallbacks))
+    if (!isEmpty(syncValidationCallbacks))
       runSyncValidations(formObj);
 
-    if (_.isEmpty(asyncValidationCallbacks))
+    if (isEmpty(asyncValidationCallbacks))
       return cleanValues(formObj);
     else {
       return new Promise((resolve, reject) => {
@@ -349,7 +368,7 @@ module.exports = function createParser(config) {
       configUtils.asyncValidations();
     if (config.validationInputs)
       configUtils.validationInputs();
-    if (_.isPlainObject(config.values))
+    if (isPlainObject(config.values))
       configUtils.values();
   })();
 

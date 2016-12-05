@@ -1,10 +1,10 @@
-import _ from './lodash';
+import { forEach, flatten, keys } from './utils';
 
 module.exports = function merge(...args) {
   const merged = {};
-  _.forEach(_.flatten(args), arg => {
+  forEach(flatten(args), arg => {
     if (!arg || typeof arg !== 'object') return;
-    _.forEach(_.keys(arg), key => {
+    forEach(keys(arg), key => {
       merged[key] = arg[key];
     });
   });

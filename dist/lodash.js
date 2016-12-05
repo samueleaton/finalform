@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; /* eslint-disable id-blacklist */
 /* eslint-disable id-length */
 /*
-  Includes/replaces lodash methods rather decrease file size
+  Includes/replaces lodash methods to decrease file size
 */
 
 
