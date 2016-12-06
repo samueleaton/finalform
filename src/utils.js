@@ -133,6 +133,8 @@ export function keyBy(arr, func) {
 
 /* depends on: isArray, getProto */
 export function isPlainObject(obj) {
+  if (!obj)
+    return false;
   if (typeof obj !== 'object')
     return false;
   if (isArray(obj))
@@ -158,6 +160,8 @@ export function keys(obj) {
 }
 
 export function isArray(obj) {
+  if (!obj)
+    return false;
   return (
     typeof obj === 'object' &&
     (
@@ -197,7 +201,7 @@ export function has(obj, path) {
   const pathArr = isArray(path) ? path : split(path, '.');
   if (!pathArr.length)
     return true;
-  if (obj[pathArr[0]]) {
+  if (obj.hasOwnProperty(pathArr[0])) {
     const sliced = pathArr.slice(1);
     if (sliced.length === 0)
       return true;

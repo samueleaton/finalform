@@ -204,11 +204,18 @@ module.exports = function createParser(config) {
         objKey = fieldName;
       else if (has(formObj, mappedKeysAndValues[fieldName]))
         objKey = mappedKeysAndValues[fieldName];
-      if (!has(formObj, objKey)) {
+
+      if (!objKey) {
+        return console.warn(
+          'FinalForm: cannot validate "' + fieldName + '". Field Not found.'
+        );
+      }
+      else if (!has(formObj, objKey)) {
         return console.warn(
           'FinalForm: cannot validate "' + objKey + '". Field Not found.'
         );
       }
+      
       // check if boolean or object with validation status and msg
       const validationRes = validationCb(formObj[objKey].value);
       processUserValidationResponse(formObj, objKey, validationRes);
