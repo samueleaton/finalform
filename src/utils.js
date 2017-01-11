@@ -219,3 +219,28 @@ export function concat(arr, ...args) {
     newArr.push(args[i]);
   return flatten(newArr);
 }
+
+export default {
+  toArray,
+  split,
+  replace,
+  trim,
+  escape,
+  isString,
+  isBoolean,
+  isFunction,
+  isEmpty,
+  includes,
+  getProto,
+  flatten,
+  forOwn,
+  pickBy,
+  keyBy,
+  isPlainObject,
+  keys,
+  isArray,
+  forEach,
+  map,
+  has,
+  concat
+};

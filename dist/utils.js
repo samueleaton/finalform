@@ -203,3 +203,28 @@ function concat(arr) {
     newArr.push(args[_i]);
   }return flatten(newArr);
 }
+
+exports.default = {
+  toArray: toArray,
+  split: split,
+  replace: replace,
+  trim: trim,
+  escape: escape,
+  isString: isString,
+  isBoolean: isBoolean,
+  isFunction: isFunction,
+  isEmpty: isEmpty,
+  includes: includes,
+  getProto: getProto,
+  flatten: flatten,
+  forOwn: forOwn,
+  pickBy: pickBy,
+  keyBy: keyBy,
+  isPlainObject: isPlainObject,
+  keys: keys,
+  isArray: isArray,
+  forEach: forEach,
+  map: map,
+  has: has,
+  concat: concat
+};
