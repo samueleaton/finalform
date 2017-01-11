@@ -133,6 +133,7 @@ function keyBy(arr, func) {
 
 /* depends on: isArray, getProto */
 function isPlainObject(obj) {
+  if (!obj) return false;
   if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') return false;
   if (isArray(obj)) return false;
   var proto = getProto(obj);
@@ -151,6 +152,7 @@ function keys(obj) {
 }
 
 function isArray(obj) {
+  if (!obj) return false;
   return (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && (Array.isArray && Array.isArray(obj) || obj.constructor === Array || obj instanceof Array);
 }
 
@@ -179,7 +181,7 @@ function has(obj, path) {
   if (typeof path === 'undefined' || path === null || path === '') return true;
   var pathArr = isArray(path) ? path : split(path, '.');
   if (!pathArr.length) return true;
-  if (obj[pathArr[0]]) {
+  if (obj.hasOwnProperty(pathArr[0])) {
     var sliced = pathArr.slice(1);
     if (sliced.length === 0) return true;
     return has(obj[pathArr[0]], sliced);
