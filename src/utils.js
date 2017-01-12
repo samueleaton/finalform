@@ -20,7 +20,7 @@ export function replace(arg, regex, string) {
   if (arg && arg.replace)
     return arg.replace(regex, string);
   else
-    return string;
+    return arg;
 }
 
 export function trim(string) {

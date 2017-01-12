@@ -44,7 +44,7 @@ function split(string, dilimiter) {
 }
 
 function replace(arg, regex, string) {
-  if (arg && arg.replace) return arg.replace(regex, string);else return string;
+  if (arg && arg.replace) return arg.replace(regex, string);else return arg;
 }
 
 function trim(string) {
